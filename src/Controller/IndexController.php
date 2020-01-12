@@ -21,9 +21,12 @@ namespace App\Controller;
 
 use App\Service\ImportService;
 use Psr\Container\ContainerInterface;
-use Slim\Psr7\Request;
-use Slim\Psr7\Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Views\Twig;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
  * Class IndexController
@@ -62,48 +65,50 @@ class IndexController
     /**
      * index.index
      *
-     * @param Request $request
-     * @param Response $response
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @param array $args
-     * @return Response
+     * @return ResponseInterface
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function indexAction(Request $request, Response $response, array $args): Response
+    public function indexAction(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         // TODO
 
-        $response->getBody()
-            ->write('index');
-
-        return $response;
+        return $this->view->render($response, 'index.html.twig', []);
     }
 
     /**
      * index.edit
      *
-     * @param Request $request
-     * @param Response $response
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @param array $args
-     * @return Response
+     * @return ResponseInterface
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function editAction(Request $request, Response $response, array $args): Response
+    public function editAction(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         // TODO
 
-        $response->getBody()
-            ->write('edit');
-
-        return $response;
+        return $this->view->render($response, 'edit.html.twig', []);
     }
 
     /**
      * index.import
      *
-     * @param Request $request
-     * @param Response $response
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @param array $args
-     * @return Response
+     * @return ResponseInterface
      */
-    public function importAction(Request $request, Response $response, array $args): Response
+    public function importAction(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $result = false;
 

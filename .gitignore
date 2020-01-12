@@ -4,9 +4,13 @@
 
 # Library
 
+node_modules/
 vendor/
 
 # Application
+
+public/asset/*
+!public/asset/.gitignore
 
 var/log/*
 !var/log/.gitignore
