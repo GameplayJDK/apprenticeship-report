@@ -1,29 +1,29 @@
 {
-    "name": "gameplayjdk/apprenticeship-report",
-    "description": "A tool for generating my apprenticeship report.",
-    "type": "project",
-    "minimum-stability": "stable",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "GameplayJDK",
-            "email": "github@gameplayjdk.de"
-        }
-    ],
-    "require": {
-        "php": ">= 7.1",
-        "ext-pdo": "*",
-        "slim/slim": "4.*",
-        "slim/psr7": "^1.0",
-        "slim/twig-view": "3.0",
-        "pimple/pimple": "~3.0",
-        "gameplayjdk/pimple-package-utility": "^1.0",
-        "monolog/monolog": "^2.0",
-        "phpoffice/phpspreadsheet": "^1.10"
-    },
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/"
-        }
+  "name": "gameplayjdk/apprenticeship-report",
+  "description": "A tool for generating my apprenticeship report.",
+  "type": "project",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "GameplayJDK",
+      "email": "github@gameplayjdk.de"
     }
+  ],
+  "require": {
+    "php": ">= 7.1",
+    "ext-pdo": "*",
+    "slim/slim": "4.*",
+    "slim/psr7": "^1.0",
+    "slim/twig-view": "3.0",
+    "pimple/pimple": "~3.0",
+    "gameplayjdk/pimple-package-utility": "^1.0",
+    "monolog/monolog": "^2.0",
+    "phpoffice/phpspreadsheet": "^1.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
 }
