@@ -1,0 +1,14 @@
+# Project
+
+.idea/
+
+# Library
+
+vendor/
+
+# Application
+
+var/log/*
+!var/log/.gitignore
+
+*.xlsx
