@@ -20,64 +20,16 @@
 namespace App\Controller;
 
 use App\ControllerInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
-use Slim\Views\Twig;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 /**
- * Class IndexController
+ * Class EntryController
  *
  * @package App\Controller
  */
-class IndexController implements ControllerInterface
+class EntryController implements ControllerInterface
 {
-    const ROUTE_INDEX = 'index.index';
-
-    /**
-     * @inheritDoc
-     */
     public static function register(App $app): void
     {
-        $app->get('/', IndexController::class . ':indexAction');
-    }
-
-    /**
-     * @var Twig
-     */
-    private $twig;
-
-    /**
-     * IndexController constructor.
-     * @param Twig $twig
-     */
-    public function __construct(Twig $twig)
-    {
-        $this->twig = $twig;
-
-        //$routeParser = $request->getAttribute(RouteContext::ROUTE_PARSER);
-    }
-
-    /**
-     * index.index
-     *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $args
-     * @return ResponseInterface
-     *
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
-     */
-    public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
-        // TODO
-
-        return $this->twig->render($response, 'index/index.html.twig', []);
     }
 }

@@ -33,7 +33,6 @@ if (PHP_SAPI == 'cli-server') {
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-use App\Controller\IndexController;
 use App\Package;
 use Pimple\Container;
 use Pimple\Psr11\Container as Psr11Container;
@@ -55,8 +54,6 @@ $app = AppFactory::create();
 // Add Routing Middleware.
 $app->addRoutingMiddleware();
 
-$container->register(new Package($app, $container));
-
 /*
  * Add Error Handling Middleware.
  *
@@ -68,13 +65,8 @@ $container->register(new Package($app, $container));
  */
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
-// Add the route configuration.
-$app->get('/', IndexController::class . ':indexAction')
-    ->setName(IndexController::ROUTE_INDEX);
-$app->get('/edit', IndexController::class . ':editAction')
-    ->setName(IndexController::ROUTE_EDIT);
-$app->get('/import', IndexController::class . ':importAction')
-    ->setName(IndexController::ROUTE_IMPORT);
+$package = new Package($app, $container);
+$container->register($package);
 
 $app->run();
 

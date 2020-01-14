@@ -19,9 +19,8 @@
 
 namespace App\Service;
 
-use App\Mapper\EntryMapper;
+use App\Mapper\Import\EntryMapper as ImportEntryMapper;
 use App\Repository\EntryRepositoryInterface;
-use DateTime;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Exception as SpreadsheetException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -48,7 +47,7 @@ class ImportService
     private $entryRepository;
 
     /**
-     * @var EntryMapper
+     * @var ImportEntryMapper
      */
     private $entryMapper;
 
@@ -58,25 +57,42 @@ class ImportService
     private $path;
 
     /**
+     * @var int
+     */
+    private $timeLimit;
+
+    /**
      * ImportService constructor.
      * @param LoggerInterface $logger
      * @param EntryRepositoryInterface $entryRepository
-     * @param EntryMapper $entryMapper
+     * @param ImportEntryMapper $entryMapper
      * @param string $path
+     * @param int $timeLimit
      */
-    public function __construct(LoggerInterface $logger, EntryRepositoryInterface $entryRepository, EntryMapper $entryMapper, string $path)
+    public function __construct(LoggerInterface $logger, EntryRepositoryInterface $entryRepository, ImportEntryMapper $entryMapper, string $path, int $timeLimit)
     {
         $this->logger = $logger;
         $this->entryRepository = $entryRepository;
         $this->entryMapper = $entryMapper;
         $this->path = $path;
+        $this->timeLimit = $timeLimit;
     }
 
     /**
+     * TODO: Make this less ugly.
+     *
      * @return bool
      */
     public function import(): bool
     {
+        if (!$this->setTimeLimit()) {
+            $this->logger->error('Could not apply time limit.', [
+                'timeLimit' => $this->timeLimit,
+            ]);
+
+            return false;
+        }
+
         $spreadsheet = $this->getSpreadsheet();
 
         if (null === $spreadsheet) {
@@ -98,8 +114,10 @@ class ImportService
                 continue;
             }
 
+            // This is for better readability.
+            $data = $row;
+
             try {
-                $data = $this->convertRowToData($row);
                 $entry = $this->entryMapper->fromData($data);
 
                 if ($this->entryRepository->insertOne($entry)) {
@@ -129,6 +147,14 @@ class ImportService
         }
 
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    private function setTimeLimit(): bool
+    {
+        return set_time_limit($this->timeLimit);
     }
 
     /**
@@ -165,55 +191,5 @@ class ImportService
         }
 
         return [];
-    }
-
-    /**
-     * This implementation is very use-case specific.
-     *
-     * @param array $row
-     * @return array
-     * @throws Exception
-     */
-    private function convertRowToData(array $row): array
-    {
-        $data = [];
-
-        $issue = $row['A'] ?: '';
-        $date = $row['D'] ?: '';
-        $project = $row['T'] ?: '';
-        $description = $row['W'] ?: '';
-
-        $dateTimeString = $this->convertDateTimeFormat($date);
-
-        $data[EntryMapper::KEY_ID] = -1;
-        $data[EntryMapper::KEY_DATETIME_FROM] = $dateTimeString;
-        $data[EntryMapper::KEY_DATETIME_TO] = $dateTimeString;
-        $data[EntryMapper::KEY_CONTENT] = "({$project}) {$description}";
-        $data[EntryMapper::KEY_ISSUE] = $issue;
-
-        return $data;
-    }
-
-    /**
-     * This implementation is very use-case specific.
-     *
-     * @param string $string
-     * @return string
-     * @throws Exception
-     */
-    private function convertDateTimeFormat(?string $string): ?string
-    {
-        $dateTime = DateTime::createFromFormat('Y-m-d H:i', $string);
-
-        if (false === $dateTime) {
-            $this->logger->info('Could not create datetime.', [
-                'string' => $string,
-                'dateTime' => $dateTime,
-            ]);
-
-            return '';
-        }
-
-        return $dateTime->format(EntryMapper::DTS_FORMAT);
     }
 }

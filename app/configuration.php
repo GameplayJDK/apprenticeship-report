@@ -17,6 +17,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+use App\Mapper\Import\EntryMapper as ImportEntryMapper;
 use App\Service\ImportService;
 use Monolog\Logger;
 use Slim\Views\Twig;
@@ -47,6 +48,18 @@ return [
     ],
 
     ImportService::class => [
+        'time_limit' => 0,
         'path' => dirname(__DIR__) . '/import.xslx'
+    ],
+
+    ImportEntryMapper::class => [
+        'map' => [
+            ImportEntryMapper::KEY_ID => -1,
+            ImportEntryMapper::KEY_DATETIME_FROM => 'D',
+            ImportEntryMapper::KEY_DATETIME_TO => 'D',
+            ImportEntryMapper::KEY_CONTENT => 'W',
+            ImportEntryMapper::KEY_CONTENT_HINT => 'T',
+            ImportEntryMapper::KEY_ISSUE => 'A',
+        ],
     ],
 ];

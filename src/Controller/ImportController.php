@@ -20,64 +20,72 @@
 namespace App\Controller;
 
 use App\ControllerInterface;
+use App\Service\ImportService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
-use Slim\Views\Twig;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
+use Slim\Exception\HttpNotFoundException;
 
 /**
- * Class IndexController
+ * Class ImportController
  *
  * @package App\Controller
  */
-class IndexController implements ControllerInterface
+class ImportController implements ControllerInterface
 {
-    const ROUTE_INDEX = 'index.index';
+    const ROUTE_INDEX = 'import.index';
 
     /**
-     * @inheritDoc
+     * @param App $app
      */
     public static function register(App $app): void
     {
-        $app->get('/', IndexController::class . ':indexAction');
+        $app->post('/import', static::class . ':indexAction')
+            ->setName(static::ROUTE_INDEX);
     }
 
     /**
-     * @var Twig
+     * @var ImportService
      */
-    private $twig;
+    private $importService;
 
     /**
-     * IndexController constructor.
-     * @param Twig $twig
+     * ImportController constructor.
+     * @param ImportService $importService
      */
-    public function __construct(Twig $twig)
+    public function __construct(ImportService $importService)
     {
-        $this->twig = $twig;
-
-        //$routeParser = $request->getAttribute(RouteContext::ROUTE_PARSER);
+        $this->importService = $importService;
     }
 
+
     /**
-     * index.index
+     * import.index
      *
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
-     *
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
+     * @throws HttpNotFoundException
      */
     public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        // TODO
+        if ($request->getHeaderLine('X-Requested-With') !== 'XMLHttpRequest') {
+            throw new HttpNotFoundException($request);
+        }
 
-        return $this->twig->render($response, 'index/index.html.twig', []);
+        $result = $this->importService->import();
+        $data = [
+            'result' => $result,
+        ];
+
+        $payload = json_encode($data) ?: null;
+
+        $response->getBody()
+            ->write($payload);
+
+        return $response
+            ->withHeader('Content-Type', 'application/json');
     }
 }

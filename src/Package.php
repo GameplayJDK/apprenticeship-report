@@ -19,7 +19,11 @@
 
 namespace App;
 
+use App\Controller\EntryController;
+use App\Controller\ImportController;
+use App\Controller\IndexController;
 use App\Mapper\EntryMapper;
+use App\Mapper\Import\EntryMapper as ImportEntryMapper;
 use App\Repository\EntryRepository;
 use App\Repository\EntryRepositoryInterface;
 use App\Service\ImportService;
@@ -66,7 +70,9 @@ class Package extends PackageAbstract
     {
         parent::register($pimple);
 
-        $this->container[App::class] = $this->app;
+        $this->registerService(App::class, function (Container $container): App {
+            return $this->app;
+        });
 
         $this->register3rdPartyService();
 
@@ -77,6 +83,8 @@ class Package extends PackageAbstract
         $this->registerRepository();
 
         $this->registerImportService();
+
+        $this->registerController();
     }
 
     /**
@@ -104,14 +112,13 @@ class Package extends PackageAbstract
             /** @var array $settings */
             $settings = $configuration[Twig::class];
 
-            $twig = Twig::create($settings['path'], $settings);
-
-            return $twig;
+            return Twig::create($settings['path'], $settings);
         });
 
         $this->registerService(Logger::class, function (Container $container) use ($configuration): Logger {
             /** @var array $settings */
             $settings = $configuration[Logger::class];
+
             /** @var Logger $logger */
             $logger = new Logger($settings['name']);
 
@@ -159,10 +166,32 @@ class Package extends PackageAbstract
         });
     }
 
+    /**
+     * @throws PackageException
+     */
     private function registerMapper(): void
     {
+        $this->registerConfiguration(ImportEntryMapper::class, [
+            'map' => [],
+        ]);
+
+        /** @var array $configuration */
+        $configuration = $this->container[static::SERVICE_NAME_CONFIGURATION];
+
         $this->registerService(EntryMapper::class, function (Container $container): EntryMapper {
             return new EntryMapper();
+        });
+
+        $this->registerService(ImportEntryMapper::class, function (Container $container) use ($configuration): ImportEntryMapper {
+            /** @var array $settings */
+            $settings = $configuration[ImportEntryMapper::class];
+
+            /** @var LoggerInterface $logger */
+            $logger = $container[LoggerInterface::class];
+            /** @var array $map */
+            $map = $settings['map'];
+
+            return new ImportEntryMapper($logger, $map);
         });
     }
 
@@ -186,6 +215,8 @@ class Package extends PackageAbstract
     private function registerImportService(): void
     {
         $this->registerConfiguration(ImportService::class, [
+            // No limit when 0.
+            'time_limit' => 0,
             // Only Xslx support for now.
             'path' => dirname(__DIR__) . '/import.xslx',
         ]);
@@ -201,10 +232,37 @@ class Package extends PackageAbstract
             $logger = $container[LoggerInterface::class];
             /** @var EntryRepositoryInterface $entryRepository */
             $entryRepository = $container[EntryRepositoryInterface::class];
-            /** @var EntryMapper $entryMapper */
-            $entryMapper = $container[EntryMapper::class];
+            /** @var ImportEntryMapper $entryMapper */
+            $entryMapper = $container[ImportEntryMapper::class];
 
-            return new ImportService($logger, $entryRepository, $entryMapper, $settings['path']);
+            return new ImportService($logger, $entryRepository, $entryMapper, $settings['path'], $settings['time_limit']);
         });
+    }
+
+    private function registerController()
+    {
+        $this->registerService(IndexController::class, function (Container $container): IndexController {
+            /** @var Twig $twig */
+            $twig = $container[Twig::class];
+
+            return new IndexController($twig);
+        });
+
+        IndexController::register($this->app);
+
+        $this->registerService(EntryController::class, function (Container $container): EntryController {
+            return new EntryController();
+        });
+
+        EntryController::register($this->app);
+
+        $this->registerService(EntryController::class, function (Container $container): ImportController {
+            /** @var ImportService $importService */
+            $importService = $container[ImportService::class];
+
+            return new ImportController($importService);
+        });
+
+        ImportController::register($this->app);
     }
 }
