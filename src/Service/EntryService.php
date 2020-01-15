@@ -19,7 +19,6 @@
 
 namespace App\Service;
 
-use App\Entity\Entry;
 use App\Model\EntryListModel;
 use App\Repository\EntryRepositoryInterface;
 use Psr\Log\LoggerInterface;
