@@ -20,7 +20,15 @@
 namespace App\Controller;
 
 use App\ControllerInterface;
+use App\Service\EntryService;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
+use Slim\Interfaces\RouteCollectorProxyInterface;
+use Slim\Views\Twig;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
  * Class EntryController
@@ -29,7 +37,161 @@ use Slim\App;
  */
 class EntryController implements ControllerInterface
 {
+    const ROUTE_INDEX = 'entry.index';
+    const ROUTE_CREATE = 'entry.create';
+    const ROUTE_VIEW = 'entry.view';
+    const ROUTE_EDIT = 'entry.edit';
+    const ROUTE_DELETE = 'entry.delete';
+
+    /**
+     * @var array|string[]
+     */
+    const METHOD = [
+        'GET',
+        'POST',
+    ];
+
+    /**
+     * @param App $app
+     */
     public static function register(App $app): void
     {
+        $app->group('/entry', function (RouteCollectorProxyInterface $group): void {
+            $group->get('', EntryController::class . ':indexAction')
+                ->setName(EntryController::ROUTE_INDEX);
+
+            $group->get('/view/{id:[0-9]+}', EntryController::class . ':viewAction')
+                ->setName(EntryController::ROUTE_VIEW);
+
+            $group->map(EntryController::METHOD, '/create', EntryController::class . ':createAction')
+                ->setName(EntryController::ROUTE_CREATE);
+
+            $group->map(EntryController::METHOD, '/edit/{id:[0-9]+}', EntryController::class . ':editAction')
+                ->setName(EntryController::ROUTE_EDIT);
+
+            $group->map(EntryController::METHOD, '/delete/{id:[0-9]+}', EntryController::class . ':deleteAction')
+                ->setName(EntryController::ROUTE_DELETE);
+        });
+    }
+
+    /**
+     * @var Twig
+     */
+    private $twig;
+
+    /**
+     * @var EntryService
+     */
+    private $entryService;
+
+    /**
+     * EntryController constructor.
+     * @param Twig $twig
+     * @param EntryService $entryService
+     */
+    public function __construct(Twig $twig, EntryService $entryService)
+    {
+        $this->twig = $twig;
+        $this->entryService = $entryService;
+    }
+
+    /**
+     * entry.index
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        // TODO: Add pagination.
+        //$page = (int)($request->getQueryParams()['page'] ?? 0);
+
+        $data = $this->entryService->getEntryList();
+
+        return $this->twig->render($response, 'entry/index.html.twig', [
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * entry.view
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function viewAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        // TODO
+
+        return $this->twig->render($response, 'entry/view.html.twig', []);
+    }
+
+    /**
+     * entry.create
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function createAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        // TODO
+
+        return $this->twig->render($response, 'entry/create.html.twig', []);
+    }
+
+    /**
+     * entry.edit
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function editAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        // TODO
+
+        return $this->twig->render($response, 'entry/edit.html.twig', []);
+    }
+
+    /**
+     * entry.delete
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function deleteAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        // TODO
+
+        return $this->twig->render($response, 'entry/delete.html.twig', []);
     }
 }

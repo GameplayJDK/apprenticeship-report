@@ -1,5 +1,4 @@
-<?php
-/**
+/*!
  * The MIT License (MIT)
  * Copyright (c) 2020 GameplayJDK
  *
@@ -17,39 +16,6 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace App\Repository;
-
-use App\Entity\Entry;
-
-/**
- * Interface EntryRepositoryInterface
- *
- * @package App\Repository
- */
-interface EntryRepositoryInterface
-{
-    /**
-     * @param Entry $entry
-     * @return bool
-     */
-    public function insertOne(Entry $entry): bool;
-
-    /**
-     * @return int
-     * @deprecated Unused.
-     */
-    public function countAll(): int;
-
-    /**
-     * @return array|Entry[]
-     */
-    public function getAll(): array;
-
-    /**
-     * @param int $offset
-     * @param int $limit
-     * @return array|Entry[]
-     * @deprecated Unused.
-     */
-    public function getAllWithOffsetAndLimit(int $offset, int $limit): array;
+.min-width-0 {
+  min-width: 0;
 }

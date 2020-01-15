@@ -109,7 +109,7 @@ class EntryMapper extends MainEntryMapper
     private function getIdFromData(array $data): int
     {
         $key = $this->map[static::KEY_ID] ?? -1;
-        return $data[$key] ?? -1;
+        return (int)($data[$key] ?? -1);
     }
 
     /**

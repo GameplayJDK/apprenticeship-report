@@ -17,39 +17,49 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace App\Repository;
+namespace App\Service;
 
 use App\Entity\Entry;
+use App\Model\EntryListModel;
+use App\Repository\EntryRepositoryInterface;
+use Psr\Log\LoggerInterface;
 
 /**
- * Interface EntryRepositoryInterface
+ * Class EntryService
  *
- * @package App\Repository
+ * @package App\Service
  */
-interface EntryRepositoryInterface
+class EntryService
 {
     /**
-     * @param Entry $entry
-     * @return bool
+     * @var LoggerInterface
      */
-    public function insertOne(Entry $entry): bool;
+    private $logger;
 
     /**
-     * @return int
-     * @deprecated Unused.
+     * @var EntryRepositoryInterface
      */
-    public function countAll(): int;
+    private $entryRepository;
 
     /**
-     * @return array|Entry[]
+     * EntryService constructor.
+     * @param LoggerInterface $logger
+     * @param EntryRepositoryInterface $entryRepository
      */
-    public function getAll(): array;
+    public function __construct(LoggerInterface $logger, EntryRepositoryInterface $entryRepository)
+    {
+        $this->logger = $logger;
+        $this->entryRepository = $entryRepository;
+    }
 
     /**
-     * @param int $offset
-     * @param int $limit
-     * @return array|Entry[]
-     * @deprecated Unused.
+     * @return EntryListModel
      */
-    public function getAllWithOffsetAndLimit(int $offset, int $limit): array;
+    public function getEntryList(): EntryListModel
+    {
+        $all = $this->entryRepository->getAll();
+
+        return (new EntryListModel())
+            ->setList($all);
+    }
 }

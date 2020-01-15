@@ -26,6 +26,7 @@ use App\Mapper\EntryMapper;
 use App\Mapper\Import\EntryMapper as ImportEntryMapper;
 use App\Repository\EntryRepository;
 use App\Repository\EntryRepositoryInterface;
+use App\Service\EntryService;
 use App\Service\ImportService;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
@@ -37,6 +38,8 @@ use Pimple\Package\PackageAbstract;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
+use Twig\Extension\DebugExtension;
 
 /**
  * Class Package
@@ -74,13 +77,15 @@ class Package extends PackageAbstract
             return $this->app;
         });
 
-        $this->register3rdPartyService();
+        $this->register3rdParty();
 
         $this->registerDatabase();
 
         $this->registerMapper();
 
         $this->registerRepository();
+
+        $this->registerEntryService();
 
         $this->registerImportService();
 
@@ -90,7 +95,7 @@ class Package extends PackageAbstract
     /**
      * @throws PackageException
      */
-    private function register3rdPartyService(): void
+    private function register3rdParty(): void
     {
         $this->registerConfiguration(Twig::class, [
             'path' => dirname(__DIR__) . '/view',
@@ -112,8 +117,18 @@ class Package extends PackageAbstract
             /** @var array $settings */
             $settings = $configuration[Twig::class];
 
-            return Twig::create($settings['path'], $settings);
+            $twig = Twig::create($settings['path'], $settings['settings']);
+            $twigEnvironment = $twig->getEnvironment();
+
+            if ($twigEnvironment->isDebug()) {
+                $twig->addExtension(new DebugExtension());
+            }
+
+            return $twig;
         });
+
+        $twigMiddleware = TwigMiddleware::createFromContainer($this->app, Twig::class);
+        $this->app->add($twigMiddleware);
 
         $this->registerService(Logger::class, function (Container $container) use ($configuration): Logger {
             /** @var array $settings */
@@ -239,6 +254,18 @@ class Package extends PackageAbstract
         });
     }
 
+    private function registerEntryService(): void
+    {
+        $this->registerService(EntryService::class, function (Container $container): EntryService {
+            /** @var LoggerInterface $logger */
+            $logger = $container[LoggerInterface::class];
+            /** @var EntryRepositoryInterface $entryRepository */
+            $entryRepository = $container[EntryRepositoryInterface::class];
+
+            return new EntryService($logger, $entryRepository);
+        });
+    }
+
     private function registerController()
     {
         $this->registerService(IndexController::class, function (Container $container): IndexController {
@@ -251,12 +278,17 @@ class Package extends PackageAbstract
         IndexController::register($this->app);
 
         $this->registerService(EntryController::class, function (Container $container): EntryController {
-            return new EntryController();
+            /** @var Twig $twig */
+            $twig = $container[Twig::class];
+            /** @var EntryService $entryService */
+            $entryService = $container[EntryService::class];
+
+            return new EntryController($twig, $entryService);
         });
 
         EntryController::register($this->app);
 
-        $this->registerService(EntryController::class, function (Container $container): ImportController {
+        $this->registerService(ImportController::class, function (Container $container): ImportController {
             /** @var ImportService $importService */
             $importService = $container[ImportService::class];
 

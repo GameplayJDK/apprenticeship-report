@@ -65,7 +65,7 @@ option = (function (option) {
 const path = {
     style: {
         // Additional scss dependencies are added through @import statements.
-        src: './asset/style/main.scss',
+        src: './asset/style/main.scss', // TODO: This stops the watch task from working
         dest: './public/asset/style',
         map: './map',
         // Delete this when cleaning up.
@@ -236,10 +236,25 @@ function cleanCompileStyleTask() {
 }
 
 function watchStyleTask() {
+    function fixPath(path) {
+        var segment = path.split('/');
+        var name = segment.pop();
+
+        if ('main.scss' === name) {
+            segment.push('**', '*.scss');
+        } else {
+            segment.push(name);
+        }
+
+        return segment.join('/');
+    }
+
     function watchStyleTask() {
+        var src = fixPath(path.style.src);
+
         return (
             gulp
-                .watch(path.style.src, compileStyleTask)
+                .watch(src, compileStyleTask)
         );
     }
 

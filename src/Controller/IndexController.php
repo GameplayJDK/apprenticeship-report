@@ -20,7 +20,6 @@
 namespace App\Controller;
 
 use App\ControllerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
@@ -39,11 +38,12 @@ class IndexController implements ControllerInterface
     const ROUTE_INDEX = 'index.index';
 
     /**
-     * @inheritDoc
+     * @param App $app
      */
     public static function register(App $app): void
     {
-        $app->get('/', IndexController::class . ':indexAction');
+        $app->get('/', IndexController::class . ':indexAction')
+            ->setName(IndexController::ROUTE_INDEX);
     }
 
     /**

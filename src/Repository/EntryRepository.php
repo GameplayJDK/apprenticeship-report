@@ -53,7 +53,8 @@ class EntryRepository implements EntryRepositoryInterface
     }
 
     /**
-     * @inheritDoc
+     * @param Entry $entry
+     * @return bool
      */
     public function insertOne(Entry $entry): bool
     {
@@ -74,7 +75,21 @@ class EntryRepository implements EntryRepositoryInterface
     }
 
     /**
-     * @inheritDoc
+     * @return int
+     * @deprecated Unused.
+     */
+    public function countAll(): int
+    {
+        $query = 'SELECT count(id) FROM entry';
+
+        $statement = $this->database->prepare($query);
+        $statement->execute();
+
+        return $statement->fetchColumn();
+    }
+
+    /**
+     * @return array|Entry[]
      * @throws MapperException
      */
     public function getAll(): array
@@ -83,6 +98,30 @@ class EntryRepository implements EntryRepositoryInterface
 
         $statement = $this->database->prepare($query);
         $statement->execute();
+
+        $array = $statement->fetchAll();
+
+        return $this->entryMapper->fromDataArray($array);
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @return array|Entry[]
+     * @throws MapperException
+     * @deprecated Unused.
+     */
+    public function getAllWithOffsetAndLimit(int $offset, int $limit): array
+    {
+        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry LIMIT :offset, :limit';
+
+        $data = [
+            'offset' => $offset,
+            'limit' => $limit,
+        ];
+
+        $statement = $this->database->prepare($query);
+        $statement->execute($data);
 
         $array = $statement->fetchAll();
 

@@ -21,7 +21,6 @@ namespace App\Controller;
 
 use App\ControllerInterface;
 use App\Service\ImportService;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
@@ -41,8 +40,8 @@ class ImportController implements ControllerInterface
      */
     public static function register(App $app): void
     {
-        $app->post('/import', static::class . ':indexAction')
-            ->setName(static::ROUTE_INDEX);
+        $app->post('/import', ImportController::class . ':indexAction')
+            ->setName(ImportController::ROUTE_INDEX);
     }
 
     /**

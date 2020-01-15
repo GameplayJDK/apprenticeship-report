@@ -1,0 +1,50 @@
+{% extends 'page.html.twig' %}
+
+{% block title %}list entry{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col">
+            <div class="mb-3">
+                <div class="d-flex flex-row align-items-center justify-content-between">
+                    <h1>list entry</h1>
+
+                    <div>
+                        <a class="btn btn-sm btn-success" href="{{ url_for('entry.create') }}">
+                            create
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-group">
+                {% for entry in data.list %}
+                    <div class="list-group-item list-group-item-action d-flex flex-row justify-content-between align-items-center">
+                        <a class="flex-fill text-decoration-none min-width-0" href="{{ url_for('entry.view', {
+                            'id': entry.id,
+                        }) }}">
+                            <h5 class="mb-0 d-block text-truncate">{{ entry.content }}</h5>
+                        </a>
+
+                        <div class="flex-shrink-0 ml-3">
+                            <a class="btn btn-sm btn-primary" href="{{ url_for('entry.edit', {
+                                'id': entry.id,
+                            }) }}">
+                                edit
+                            </a>
+                            <a class="btn btn-sm btn-danger" href="{{ url_for('entry.delete', {
+                                'id': entry.id,
+                            }) }}">
+                                delete
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="list-group-item text-center text-secondary p-5">
+                        no entry found
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

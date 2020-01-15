@@ -17,39 +17,45 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace App\Repository;
+namespace App\Model;
 
 use App\Entity\Entry;
 
 /**
- * Interface EntryRepositoryInterface
+ * Class EntryListModel
  *
- * @package App\Repository
+ * @package App\Model
  */
-interface EntryRepositoryInterface
+class EntryListModel
 {
     /**
-     * @param Entry $entry
-     * @return bool
+     * @var array|Entry[]
      */
-    public function insertOne(Entry $entry): bool;
+    private $list;
 
     /**
-     * @return int
-     * @deprecated Unused.
+     * EntryListModel constructor.
      */
-    public function countAll(): int;
+    public function __construct()
+    {
+        $this->list = [];
+    }
 
     /**
-     * @return array|Entry[]
+     * @return Entry[]|array
      */
-    public function getAll(): array;
+    public function getList(): array
+    {
+        return $this->list;
+    }
 
     /**
-     * @param int $offset
-     * @param int $limit
-     * @return array|Entry[]
-     * @deprecated Unused.
+     * @param Entry[]|array $list
+     * @return EntryListModel
      */
-    public function getAllWithOffsetAndLimit(int $offset, int $limit): array;
+    public function setList(array $list)
+    {
+        $this->list = $list;
+        return $this;
+    }
 }
