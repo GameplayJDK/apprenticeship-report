@@ -19,6 +19,8 @@
 
 namespace App\Model;
 
+use App\Entity\Entry;
+
 /**
  * Class OneEntryModel
  *
@@ -26,4 +28,42 @@ namespace App\Model;
  */
 class OneEntryModel
 {
+    /**
+     * @var Entry|null
+     */
+    private $entry;
+
+    /**
+     * OneEntryModel constructor.
+     */
+    public function __construct()
+    {
+        $this->entry = null;
+    }
+
+    /**
+     * @return Entry|null
+     */
+    public function getEntry(): ?Entry
+    {
+        return $this->entry;
+    }
+
+    /**
+     * @param Entry|null $entry
+     * @return OneEntryModel
+     */
+    public function setEntry(?Entry $entry): OneEntryModel
+    {
+        $this->entry = $entry;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasEntry(): bool
+    {
+        return null !== $this->entry;
+    }
 }

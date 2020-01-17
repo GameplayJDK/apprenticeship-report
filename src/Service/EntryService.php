@@ -19,8 +19,8 @@
 
 namespace App\Service;
 
-use App\Entity\Entry;
 use App\Model\ListEntryModel;
+use App\Model\OneEntryModel;
 use App\Repository\EntryRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
@@ -76,13 +76,14 @@ class EntryService
 
     /**
      * @param int $id
-     * @return Entry|null
+     * @return OneEntryModel
      */
-    public function retrieveEntry(int $id): ?EntryModel
+    public function retrieveEntry(int $id): OneEntryModel
     {
         // TODO
 
-        return null;
+        return (new OneEntryModel())
+            ->setEntry(null);
     }
 
     /**
@@ -98,12 +99,15 @@ class EntryService
     }
 
     /**
+     * @param int $id
      * @param array $dataArray
      * @return bool
      */
-    public function deleteEntry(array $dataArray): bool
+    public function deleteEntry(int $id, array $dataArray): bool
     {
         // TODO
+
+        // $id === $dataArray['id']
 
         return false;
     }

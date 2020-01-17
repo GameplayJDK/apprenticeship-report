@@ -53,7 +53,7 @@ class ListEntryModel
      * @param Entry[]|array $list
      * @return ListEntryModel
      */
-    public function setList(array $list)
+    public function setList(array $list): ListEntryModel
     {
         $this->list = $list;
         return $this;

@@ -184,7 +184,7 @@ class EntryController implements ControllerInterface
 
         $data = $this->entryService->retrieveEntry($id);
 
-        if (null === $data) {
+        if (!$data->hasEntry()) {
             throw new HttpNotFoundException($request);
         }
 
@@ -237,7 +237,7 @@ class EntryController implements ControllerInterface
 
         $data = $this->entryService->retrieveEntry($id);
 
-        if (null === $data) {
+        if (!$data->hasEntry()) {
             throw new HttpNotFoundException($request);
         }
 
@@ -273,7 +273,7 @@ class EntryController implements ControllerInterface
 
         if ('POST' === $request->getMethod()) {
             if (null !== ($dataArray = $request->getParsedBody()['entry'] ?? null) && is_array($dataArray)) {
-                $result = $this->entryService->deleteEntry($dataArray);
+                $result = $this->entryService->deleteEntry($id, $dataArray);
 
                 if (true === $result) {
                     $path = $this->routeParser->urlFor(static::ROUTE_INDEX);
@@ -289,7 +289,7 @@ class EntryController implements ControllerInterface
 
         $data = $this->entryService->retrieveEntry($id);
 
-        if (null === $data) {
+        if (!$data->hasEntry()) {
             throw new HttpNotFoundException($request);
         }
 
