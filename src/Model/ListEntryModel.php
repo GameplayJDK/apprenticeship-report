@@ -22,11 +22,11 @@ namespace App\Model;
 use App\Entity\Entry;
 
 /**
- * Class EntryListModel
+ * Class ListEntryModel
  *
  * @package App\Model
  */
-class EntryListModel
+class ListEntryModel
 {
     /**
      * @var array|Entry[]
@@ -51,7 +51,7 @@ class EntryListModel
 
     /**
      * @param Entry[]|array $list
-     * @return EntryListModel
+     * @return ListEntryModel
      */
     public function setList(array $list)
     {

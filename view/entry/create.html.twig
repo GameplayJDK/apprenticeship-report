@@ -3,4 +3,49 @@
 {% block title %}create entry{% endblock %}
 
 {% block page_content %}
+    <div class="row">
+        <div class="col">
+            <div class="mb-3">
+                <div class="d-flex flex-row align-items-center justify-content-between">
+                    <h1>create entry</h1>
+
+                    <div>
+                        <a class="btn btn-sm btn-secondary" href="{{ url_for('entry.index') }}">
+                            back
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" action="">
+                <input type="hidden" name="entry[id]" value="-1">
+
+                <div class="form-row">
+                    <div class="col form-group">
+                        <label for="formControlFromDateTime">from datetime</label>
+                        <input id="formControlFromDateTime" class="form-control" type="date"
+                               name="entry[datetime_from]">
+                    </div>
+                    <div class="col form-group">
+                        <label for="formControlToDateTime">to datetime</label>
+                        <input id="formControlToDateTime" class="form-control" type="date" name="entry[datetime_to]">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="formInputContent">content</label>
+                    <textarea id="formInputContent" class="form-control" placeholder="content"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="formControlIssue">issue</label>
+                    <input id="formControlIssue" class="form-control" type="text" placeholder="issue">
+                </div>
+
+                <button class="btn btn-primary" type="submit">
+                    create
+                </button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

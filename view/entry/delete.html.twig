@@ -3,4 +3,31 @@
 {% block title %}delete entry{% endblock %}
 
 {% block page_content %}
+    <div class="row">
+        <div class="col">
+            <div class="mb-3">
+                <div class="d-flex flex-row align-items-center justify-content-between">
+                    <h1>delete entry</h1>
+
+                    <div>
+                        <a class="btn btn-sm btn-secondary" href="{{ url_for('entry.index') }}">
+                            back
+                        </a>
+
+                        <a class="btn btn-sm btn-info" href="{{ url_for('entry.view', {
+                            'id': data.entry.id,
+                        }) }}">
+                            view
+                        </a>
+
+                        <a class="btn btn-sm btn-primary" href="{{ url_for('entry.edit', {
+                            'id': data.entry.id,
+                        }) }}">
+                            edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

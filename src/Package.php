@@ -37,6 +37,7 @@ use Pimple\Package\Exception\PackageException;
 use Pimple\Package\PackageAbstract;
 use Psr\Log\LoggerInterface;
 use Slim\App;
+use Slim\Interfaces\RouteParserInterface;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Twig\Extension\DebugExtension;
@@ -278,12 +279,15 @@ class Package extends PackageAbstract
         IndexController::register($this->app);
 
         $this->registerService(EntryController::class, function (Container $container): EntryController {
+            /** @var RouteParserInterface $routeParser */
+            $routeParser = $this->app->getRouteCollector()
+                ->getRouteParser();
             /** @var Twig $twig */
             $twig = $container[Twig::class];
             /** @var EntryService $entryService */
             $entryService = $container[EntryService::class];
 
-            return new EntryController($twig, $entryService);
+            return new EntryController($routeParser, $twig, $entryService);
         });
 
         EntryController::register($this->app);

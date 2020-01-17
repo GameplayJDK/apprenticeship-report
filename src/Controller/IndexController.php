@@ -78,6 +78,7 @@ class IndexController implements ControllerInterface
     {
         // TODO
 
-        return $this->twig->render($response, 'index/index.html.twig', []);
+        return $this->twig
+            ->render($response, 'index/index.html.twig', []);
     }
 }

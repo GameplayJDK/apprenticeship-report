@@ -21,10 +21,13 @@ namespace App\Controller;
 
 use App\ControllerInterface;
 use App\Service\EntryService;
+use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Interfaces\RouteCollectorProxyInterface;
+use Slim\Interfaces\RouteParserInterface;
 use Slim\Views\Twig;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -60,11 +63,11 @@ class EntryController implements ControllerInterface
             $group->get('', EntryController::class . ':indexAction')
                 ->setName(EntryController::ROUTE_INDEX);
 
-            $group->get('/view/{id:[0-9]+}', EntryController::class . ':viewAction')
-                ->setName(EntryController::ROUTE_VIEW);
-
             $group->map(EntryController::METHOD, '/create', EntryController::class . ':createAction')
                 ->setName(EntryController::ROUTE_CREATE);
+
+            $group->get('/view/{id:[0-9]+}', EntryController::class . ':viewAction')
+                ->setName(EntryController::ROUTE_VIEW);
 
             $group->map(EntryController::METHOD, '/edit/{id:[0-9]+}', EntryController::class . ':editAction')
                 ->setName(EntryController::ROUTE_EDIT);
@@ -73,6 +76,11 @@ class EntryController implements ControllerInterface
                 ->setName(EntryController::ROUTE_DELETE);
         });
     }
+
+    /**
+     * @var RouteParserInterface
+     */
+    private $routeParser;
 
     /**
      * @var Twig
@@ -86,11 +94,13 @@ class EntryController implements ControllerInterface
 
     /**
      * EntryController constructor.
+     * @param RouteParserInterface $routeParser
      * @param Twig $twig
      * @param EntryService $entryService
      */
-    public function __construct(Twig $twig, EntryService $entryService)
+    public function __construct(RouteParserInterface $routeParser, Twig $twig, EntryService $entryService)
     {
+        $this->routeParser = $routeParser;
         $this->twig = $twig;
         $this->entryService = $entryService;
     }
@@ -109,33 +119,12 @@ class EntryController implements ControllerInterface
      */
     public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        // TODO: Add pagination.
-        //$page = (int)($request->getQueryParams()['page'] ?? 0);
+        $data = $this->entryService->retrieveEntryList();
 
-        $data = $this->entryService->getEntryList();
-
-        return $this->twig->render($response, 'entry/index.html.twig', [
-            'data' => $data,
-        ]);
-    }
-
-    /**
-     * entry.view
-     *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $args
-     * @return ResponseInterface
-     *
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
-     */
-    public function viewAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
-        // TODO
-
-        return $this->twig->render($response, 'entry/view.html.twig', []);
+        return $this->twig
+            ->render($response, 'entry/index.html.twig', [
+                'data' => $data,
+            ]);
     }
 
     /**
@@ -152,9 +141,57 @@ class EntryController implements ControllerInterface
      */
     public function createAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        // TODO
+        if ('POST' === $request->getMethod()) {
+            if (null !== ($dataArray = $request->getParsedBody()['entry'] ?? null) && is_array($dataArray)) {
+                $id = $this->entryService->createEntry($dataArray);
 
-        return $this->twig->render($response, 'entry/create.html.twig', []);
+                if ($id > -1) {
+                    $path = $this->routeParser->urlFor(static::ROUTE_VIEW, [
+                        'id' => $id,
+                    ]);
+
+                    return $response
+                        ->withHeader('Location', $path)
+                        ->withStatus(StatusCodeInterface::STATUS_FOUND);
+                }
+            }
+        }
+
+        return $this->twig
+            ->render($response, 'entry/create.html.twig', []);
+    }
+
+    /**
+     * entry.view
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     *
+     * @throws HttpNotFoundException
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function viewAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        $id = (int)($args['id'] ?? -1);
+
+        if (!($id > -1)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $data = $this->entryService->retrieveEntry($id);
+
+        if (null === $data) {
+            throw new HttpNotFoundException($request);
+        }
+
+        return $this->twig
+            ->render($response, 'entry/view.html.twig', [
+                'data' => $data,
+            ]);
     }
 
     /**
@@ -165,15 +202,50 @@ class EntryController implements ControllerInterface
      * @param array $args
      * @return ResponseInterface
      *
+     * @throws HttpNotFoundException
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
      */
     public function editAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        // TODO
+        $id = (int)($args['id'] ?? -1);
 
-        return $this->twig->render($response, 'entry/edit.html.twig', []);
+        if (!($id > -1)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $error = false;
+
+        if ('POST' === $request->getMethod()) {
+            if (null !== ($dataArray = $request->getParsedBody()['entry'] ?? null) && is_array($dataArray)) {
+                $result = $this->entryService->updateEntry($id, $dataArray);
+
+                if (true === $result) {
+                    $path = $this->routeParser->urlFor(static::ROUTE_VIEW, [
+                        'id' => $id,
+                    ]);
+
+                    return $response
+                        ->withHeader('Location', $path)
+                        ->withStatus(StatusCodeInterface::STATUS_FOUND);
+                } else {
+                    $error = true;
+                }
+            }
+        }
+
+        $data = $this->entryService->retrieveEntry($id);
+
+        if (null === $data) {
+            throw new HttpNotFoundException($request);
+        }
+
+        return $this->twig
+            ->render($response, 'entry/edit.html.twig', [
+                'data' => $data,
+                'error' => $error,
+            ]);
     }
 
     /**
@@ -184,14 +256,47 @@ class EntryController implements ControllerInterface
      * @param array $args
      * @return ResponseInterface
      *
+     * @throws HttpNotFoundException
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
      */
     public function deleteAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        // TODO
+        $id = (int)($args['id'] ?? -1);
 
-        return $this->twig->render($response, 'entry/delete.html.twig', []);
+        if (!($id > -1)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        $error = false;
+
+        if ('POST' === $request->getMethod()) {
+            if (null !== ($dataArray = $request->getParsedBody()['entry'] ?? null) && is_array($dataArray)) {
+                $result = $this->entryService->deleteEntry($dataArray);
+
+                if (true === $result) {
+                    $path = $this->routeParser->urlFor(static::ROUTE_INDEX);
+
+                    return $response
+                        ->withHeader('Location', $path)
+                        ->withStatus(StatusCodeInterface::STATUS_FOUND);
+                } else {
+                    $error = true;
+                }
+            }
+        }
+
+        $data = $this->entryService->retrieveEntry($id);
+
+        if (null === $data) {
+            throw new HttpNotFoundException($request);
+        }
+
+        return $this->twig
+            ->render($response, 'entry/delete.html.twig', [
+                'data' => $data,
+                'error' => $error,
+            ]);
     }
 }

@@ -19,7 +19,8 @@
 
 namespace App\Service;
 
-use App\Model\EntryListModel;
+use App\Entity\Entry;
+use App\Model\ListEntryModel;
 use App\Repository\EntryRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
@@ -52,13 +53,58 @@ class EntryService
     }
 
     /**
-     * @return EntryListModel
+     * @param array $dataArray
+     * @return int
      */
-    public function getEntryList(): EntryListModel
+    public function createEntry(array $dataArray): int
+    {
+        // TODO
+
+        return -1;
+    }
+
+    /**
+     * @return ListEntryModel
+     */
+    public function retrieveEntryList(): ListEntryModel
     {
         $all = $this->entryRepository->getAll();
 
-        return (new EntryListModel())
+        return (new ListEntryModel())
             ->setList($all);
+    }
+
+    /**
+     * @param int $id
+     * @return Entry|null
+     */
+    public function retrieveEntry(int $id): ?EntryModel
+    {
+        // TODO
+
+        return null;
+    }
+
+    /**
+     * @param int $id
+     * @param array $dataArray
+     * @return bool
+     */
+    public function updateEntry(int $id, array $dataArray): bool
+    {
+        // TODO
+
+        return false;
+    }
+
+    /**
+     * @param array $dataArray
+     * @return bool
+     */
+    public function deleteEntry(array $dataArray): bool
+    {
+        // TODO
+
+        return false;
     }
 }

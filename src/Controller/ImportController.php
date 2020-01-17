@@ -58,7 +58,6 @@ class ImportController implements ControllerInterface
         $this->importService = $importService;
     }
 
-
     /**
      * import.index
      *
