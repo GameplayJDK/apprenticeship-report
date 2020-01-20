@@ -32,16 +32,14 @@
                                 {% endif %}
                             </a>
                         </li>
-                        {#
-                        <li class="nav-item{% if is_current_url('index.print') %} active{% endif %}">
-                            <a class="nav-link" href="{{ url_for('index.print') }}">
+                        <li class="nav-item{% if is_current_url('print.index') %} active{% endif %}">
+                            <a class="nav-link" href="{{ url_for('print.index') }}">
                                 print
-                                {% if is_current_url('index.print') %}
+                                {% if is_current_url('print.index') %}
                                     <span class="sr-only">(current)</span>
                                 {% endif %}
                             </a>
                         </li>
-                        #}
                     </ul>
 
                     <ul class="navbar-nav">

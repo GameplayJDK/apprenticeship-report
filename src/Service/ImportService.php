@@ -157,6 +157,9 @@ class ImportService
      */
     private function setTimeLimit(): bool
     {
+        // TODO: Test the behaviour of the following function:
+        //ignore_user_abort(true);
+
         return set_time_limit($this->timeLimit);
     }
 
@@ -194,5 +197,21 @@ class ImportService
         }
 
         return [];
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeLimit(): int
+    {
+        return $this->timeLimit;
     }
 }

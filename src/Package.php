@@ -22,6 +22,7 @@ namespace App;
 use App\Controller\EntryController;
 use App\Controller\ImportController;
 use App\Controller\IndexController;
+use App\Controller\PrintController;
 use App\Mapper\EntryMapper;
 use App\Mapper\Import\EntryMapper as ImportEntryMapper;
 use App\Mapper\Modify\EntryMapper as ModifyEntryMapper;
@@ -29,6 +30,7 @@ use App\Repository\EntryRepository;
 use App\Repository\EntryRepositoryInterface;
 use App\Service\EntryService;
 use App\Service\ImportService;
+use App\Service\PrintService;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PDO;
@@ -90,6 +92,8 @@ class Package extends PackageAbstract
         $this->registerEntryService();
 
         $this->registerImportService();
+
+        $this->registerPrintService();
 
         $this->registerController();
     }
@@ -235,6 +239,20 @@ class Package extends PackageAbstract
         $this->registerServiceAlias(EntryRepositoryInterface::class, EntryRepository::class);
     }
 
+    private function registerEntryService(): void
+    {
+        $this->registerService(EntryService::class, function (Container $container): EntryService {
+            /** @var LoggerInterface $logger */
+            $logger = $container[LoggerInterface::class];
+            /** @var ModifyEntryMapper $entryMapper */
+            $entryMapper = $container[ModifyEntryMapper::class];
+            /** @var EntryRepositoryInterface $entryRepository */
+            $entryRepository = $container[EntryRepositoryInterface::class];
+
+            return new EntryService($logger, $entryMapper, $entryRepository);
+        });
+    }
+
     /**
      * @throws PackageException
      */
@@ -265,17 +283,10 @@ class Package extends PackageAbstract
         });
     }
 
-    private function registerEntryService(): void
+    private function registerPrintService(): void
     {
-        $this->registerService(EntryService::class, function (Container $container): EntryService {
-            /** @var LoggerInterface $logger */
-            $logger = $container[LoggerInterface::class];
-            /** @var ModifyEntryMapper $entryMapper */
-            $entryMapper = $container[ModifyEntryMapper::class];
-            /** @var EntryRepositoryInterface $entryRepository */
-            $entryRepository = $container[EntryRepositoryInterface::class];
-
-            return new EntryService($logger, $entryMapper, $entryRepository);
+        $this->registerService(PrintService::class, function (Container $container): PrintService {
+            return new PrintService();
         });
     }
 
@@ -284,8 +295,10 @@ class Package extends PackageAbstract
         $this->registerService(IndexController::class, function (Container $container): IndexController {
             /** @var Twig $twig */
             $twig = $container[Twig::class];
+            /** @var ImportService $importService */
+            $importService = $container[ImportService::class];
 
-            return new IndexController($twig);
+            return new IndexController($twig, $importService);
         });
 
         IndexController::register($this->app);
@@ -304,13 +317,15 @@ class Package extends PackageAbstract
 
         EntryController::register($this->app);
 
-        $this->registerService(ImportController::class, function (Container $container): ImportController {
-            /** @var ImportService $importService */
-            $importService = $container[ImportService::class];
+        $this->registerService(PrintController::class, function (Container $container): PrintController {
+            /** @var Twig $twig */
+            $twig = $container[Twig::class];
+            /** @var PrintService $printService */
+            $printService = $container[PrintService::class];
 
-            return new ImportController($importService);
+            return new PrintController($twig, $printService);
         });
 
-        ImportController::register($this->app);
+        PrintController::register($this->app);
     }
 }

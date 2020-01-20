@@ -20,70 +20,69 @@
 namespace App\Controller;
 
 use App\ControllerInterface;
-use App\Service\ImportService;
+use App\Service\PrintService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
-use Slim\Exception\HttpNotFoundException;
+use Slim\Views\Twig;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
- * Class ImportController
+ * Class PrintController
  *
  * @package App\Controller
  */
-class ImportController implements ControllerInterface
+class PrintController implements ControllerInterface
 {
-    const ROUTE_INDEX = 'import.index';
+    const ROUTE_INDEX = 'print.index';
 
     /**
      * @param App $app
      */
     public static function register(App $app): void
     {
-        $app->post('/import', ImportController::class . ':indexAction')
-            ->setName(ImportController::ROUTE_INDEX);
+        $app->get('/print', PrintController::class . ':indexAction')
+            ->setName(PrintController::ROUTE_INDEX);
     }
 
     /**
-     * @var ImportService
+     * @var Twig
      */
-    private $importService;
+    private $twig;
 
     /**
-     * ImportController constructor.
-     * @param ImportService $importService
+     * @var PrintService
      */
-    public function __construct(ImportService $importService)
+    private $printService;
+
+    /**
+     * PrintController constructor.
+     * @param Twig $twig
+     * @param PrintService $printService
+     */
+    public function __construct(Twig $twig, PrintService $printService)
     {
-        $this->importService = $importService;
+        $this->twig = $twig;
+        $this->printService = $printService;
     }
 
     /**
-     * import.index
+     * print.index
      *
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
-     * @throws HttpNotFoundException
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        if ($request->getHeaderLine('X-Requested-With') !== 'XMLHttpRequest') {
-            throw new HttpNotFoundException($request);
-        }
-
-        $result = $this->importService->import();
-        $data = [
-            'result' => $result,
-        ];
-
-        $payload = json_encode($data) ?: null;
-
-        $response->getBody()
-            ->write($payload);
-
-        return $response
-            ->withHeader('Content-Type', 'application/json');
+        return $this->twig
+            ->render($response, 'print/index.html.twig', []);
     }
 }

@@ -20,9 +20,12 @@
 namespace App\Controller;
 
 use App\ControllerInterface;
+use App\Service\ImportService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
+use Slim\Exception\HttpMethodNotAllowedException;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Views\Twig;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -36,6 +39,7 @@ use Twig\Error\SyntaxError;
 class IndexController implements ControllerInterface
 {
     const ROUTE_INDEX = 'index.index';
+    const ROUTE_IMPORT = 'index.import';
 
     /**
      * @param App $app
@@ -44,6 +48,9 @@ class IndexController implements ControllerInterface
     {
         $app->get('/', IndexController::class . ':indexAction')
             ->setName(IndexController::ROUTE_INDEX);
+
+        $app->get('/import', IndexController::class . ':importAction')
+            ->setName(IndexController::ROUTE_IMPORT);
     }
 
     /**
@@ -52,14 +59,19 @@ class IndexController implements ControllerInterface
     private $twig;
 
     /**
+     * @var ImportService
+     */
+    private $importService;
+
+    /**
      * IndexController constructor.
      * @param Twig $twig
+     * @param ImportService $importService
      */
-    public function __construct(Twig $twig)
+    public function __construct(Twig $twig, ImportService $importService)
     {
         $this->twig = $twig;
-
-        //$routeParser = $request->getAttribute(RouteContext::ROUTE_PARSER);
+        $this->importService = $importService;
     }
 
     /**
@@ -76,9 +88,43 @@ class IndexController implements ControllerInterface
      */
     public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        // TODO
-
         return $this->twig
-            ->render($response, 'index/index.html.twig', []);
+            ->render($response, 'index/index.html.twig', [
+                'import' => [
+                    'configuration' => [
+                        'time_limit' => $this->importService->getTimeLimit(),
+                        'path' => $this->importService->getPath(),
+                    ],
+                ],
+            ]);
+    }
+
+    /**
+     * index.import
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     * @throws HttpMethodNotAllowedException
+     */
+    public function importAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        if ($request->getHeaderLine('X-Requested-With') !== 'XMLHttpRequest') {
+            throw new HttpMethodNotAllowedException($request);
+        }
+
+        $result = $this->importService->import();
+        $data = [
+            'result' => $result,
+        ];
+
+        $payload = json_encode($data) ?: null;
+
+        $response->getBody()
+            ->write($payload);
+
+        return $response
+            ->withHeader('Content-Type', 'application/json');
     }
 }

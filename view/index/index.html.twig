@@ -3,4 +3,71 @@
 {% block title %}start{% endblock %}
 
 {% block page_content %}
+    <div class="row">
+        <div class="col">
+            <div class="mb-3">
+                <div class="d-flex flex-row align-items-center justify-content-between">
+                    <h1>start</h1>
+
+                    <div>
+                        <button class="btn btn-sm btn-warning" type="button" data-toggle="collapse"
+                                data-target="#collapseImport" aria-expanded="false" aria-controls="collapseImport">
+                            show import configuration
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="card card-body">
+                    <p class="h3">
+                        about <mark>apprenticeship-report</mark>:
+                    </p>
+
+                    <p>
+                        a tool for generating my apprenticeship report.
+                    </p>
+                </div>
+            </div>
+
+            <div class="collapse" id="collapseImport">
+                <div class="card card-body">
+                    <p class="h3">import configuration</p>
+
+                    <p>
+                        the following table shows the current import configuration
+                    </p>
+
+                    <table class="table">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">option</th>
+                            <th scope="col">value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for option, value in import.configuration %}
+                            <tr>
+                                <th scope="row">
+                                    <code>{{ option }}</code>
+                                </th>
+                                <td>
+                                    <code>{{ value }}</code>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <p>
+                        to import the file at the <code>path</code> shown above, click import
+                    </p>
+
+                    <button id="import" class="btn btn-warning" data-url="{{ url_for('index.import') }}">
+                        import
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
