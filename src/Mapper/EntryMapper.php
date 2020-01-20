@@ -22,6 +22,8 @@ namespace App\Mapper;
 use App\Entity\Entry;
 use App\Exception\MapperException;
 use DateTime;
+use Respect\Validation\Validator;
+use Respect\Validation\Validator as v;
 
 /**
  * Class EntryMapper
@@ -39,6 +41,8 @@ class EntryMapper
     const DTS_FORMAT = 'Y-m-d H:i:s';
 
     /**
+     * TODO: Use createValidator() instead of manual validation.
+     *
      * @param array $data
      * @return Entry
      * @throws MapperException
@@ -71,14 +75,10 @@ class EntryMapper
 
         if (isset($data[static::KEY_CONTENT]) && is_string($data[static::KEY_CONTENT])) {
             $entry->setContent($data[static::KEY_CONTENT]);
-        } else {
-            throw new MapperException('Missing key: ' . static::KEY_CONTENT);
         }
 
         if (isset($data[static::KEY_ISSUE]) && is_string($data[static::KEY_ISSUE])) {
             $entry->setIssue($data[static::KEY_ISSUE]);
-        } else {
-            throw new MapperException('Missing key: ' . static::KEY_ISSUE);
         }
 
         return $entry;
@@ -141,5 +141,21 @@ class EntryMapper
     private function createDateTime(string $string): ?DateTime
     {
         return DateTime::createFromFormat(static::DTS_FORMAT, $string) ?: null;
+    }
+
+    /**
+     * @param bool $idMandatory
+     * @return Validator
+     */
+    public function createValidator(bool $idMandatory = true): Validator
+    {
+        return v::arrayType()
+            ->keySet(...[
+                v::key(static::KEY_ID, v::intVal(), $idMandatory),
+                v::key(static::KEY_DATETIME_FROM, v::date(static::DTS_FORMAT), true),
+                v::key(static::KEY_DATETIME_TO, v::date(static::DTS_FORMAT), true),
+                v::key(static::KEY_CONTENT, v::stringType()->length(0, 1024, true), false),
+                v::key(static::KEY_ISSUE, v::stringType()->length(0, 128, true), false),
+            ]);
     }
 }

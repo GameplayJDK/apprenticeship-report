@@ -17,43 +17,43 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace App\Repository;
+namespace App\Mapper\Modify;
 
 use App\Entity\Entry;
+use App\Mapper\EntryMapper as MainEntryMapper;
 
 /**
- * Interface EntryRepositoryInterface
+ * Class EntryMapper
  *
- * @package App\Repository
+ * @package App\Mapper\Modify
  */
-interface EntryRepositoryInterface
+class EntryMapper extends MainEntryMapper
 {
     /**
-     * @param Entry $entry
+     * Override the main mapper format.
+     *
+     * From [developer.mozilla.org](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date) about the
+     * html date input field:
+     *
+     * > The displayed date format will differ from the actual `value` — the displayed date is formatted based on the locale
+     * > of the user's browser, but the parsed value is always formatted `yyyy-mm-dd`.
+     */
+    const DTS_FORMAT = 'Y-m-d';
+
+    public function fromData(array $data): Entry
+    {
+        $data[static::KEY_ID] = $this->getIdFromData($data);
+
+        return parent::fromData($data);
+    }
+
+    /**
+     * @param array $data
      * @return int
      */
-    public function insertOne(Entry $entry): int;
-
-    /**
-     * @return array|Entry[]
-     */
-    public function getAll(): array;
-
-    /**
-     * @param int $id
-     * @return Entry|null
-     */
-    public function getOneById(int $id): ?Entry;
-
-    /**
-     * @param Entry $one
-     * @return bool
-     */
-    public function updateOne(Entry $one): bool;
-
-    /**
-     * @param int $id
-     * @return bool
-     */
-    public function deleteOneById(int $id): bool;
+    private function getIdFromData(array $data): int
+    {
+        $key = $data[static::KEY_ID] ?? -1;
+        return (int)($data[$key] ?? -1);
+    }
 }

@@ -19,6 +19,9 @@
 
 namespace App\Service;
 
+use App\Entity\Entry;
+use App\Exception\MapperException;
+use App\Mapper\Modify\EntryMapper as ModifyEntryMapper;
 use App\Model\ListEntryModel;
 use App\Model\OneEntryModel;
 use App\Repository\EntryRepositoryInterface;
@@ -37,6 +40,11 @@ class EntryService
     private $logger;
 
     /**
+     * @var ModifyEntryMapper
+     */
+    private $entryMapper;
+
+    /**
      * @var EntryRepositoryInterface
      */
     private $entryRepository;
@@ -44,11 +52,13 @@ class EntryService
     /**
      * EntryService constructor.
      * @param LoggerInterface $logger
+     * @param ModifyEntryMapper $entryMapper
      * @param EntryRepositoryInterface $entryRepository
      */
-    public function __construct(LoggerInterface $logger, EntryRepositoryInterface $entryRepository)
+    public function __construct(LoggerInterface $logger, ModifyEntryMapper $entryMapper, EntryRepositoryInterface $entryRepository)
     {
         $this->logger = $logger;
+        $this->entryMapper = $entryMapper;
         $this->entryRepository = $entryRepository;
     }
 
@@ -58,7 +68,11 @@ class EntryService
      */
     public function createEntry(array $dataArray): int
     {
-        // TODO
+        $one = $this->createEntryFromDataArray($dataArray);
+
+        if (null !== $one && ($id = $this->entryRepository->insertOne($one)) > -1) {
+            return $id;
+        }
 
         return -1;
     }
@@ -80,10 +94,10 @@ class EntryService
      */
     public function retrieveEntry(int $id): OneEntryModel
     {
-        // TODO
+        $one = $this->entryRepository->getOneById($id);
 
         return (new OneEntryModel())
-            ->setEntry(null);
+            ->setEntry($one);
     }
 
     /**
@@ -93,9 +107,10 @@ class EntryService
      */
     public function updateEntry(int $id, array $dataArray): bool
     {
-        // TODO
+        $one = $this->createEntryFromDataArray($dataArray);
 
-        return false;
+        return (null !== $one) && ($one->getId() === $id) &&
+            $this->entryRepository->updateOne($one);
     }
 
     /**
@@ -105,10 +120,38 @@ class EntryService
      */
     public function deleteEntry(int $id, array $dataArray): bool
     {
-        // TODO
+        $one = $this->createEntryFromDataArray($dataArray);
 
-        // $id === $dataArray['id']
+        return (null !== $one) && ($one->getId() === $id) &&
+            $this->entryRepository->deleteOneById($id);
+    }
 
-        return false;
+    /**
+     * @param array $dataArray
+     * @return Entry|null
+     */
+    private function createEntryFromDataArray(array $dataArray): ?Entry
+    {
+        $entry = null;
+        $validator = $this->entryMapper->createValidator();
+
+        if ($validator->validate($dataArray)) {
+            try {
+                $entry = $this->entryMapper->fromData($dataArray);
+            } catch (MapperException $exception) {
+                $this->logger->error('Could not map entry from data array!', [
+                    'exception' => $exception,
+                    'dataArray' => $dataArray,
+                    'entry' => $entry,
+                ]);
+            }
+        } else {
+            $this->logger->error('Could not validate entry from data array!', [
+                'dataArray' => $dataArray,
+                'entry' => $entry,
+            ]);
+        }
+
+        return $entry;
     }
 }

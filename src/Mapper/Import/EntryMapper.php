@@ -22,9 +22,6 @@ namespace App\Mapper\Import;
 use App\Entity\Entry;
 use App\Exception\MapperException;
 use App\Mapper\EntryMapper as MainEntryMapper;
-use DateTime;
-use Exception;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class EntryMapper
@@ -35,15 +32,12 @@ class EntryMapper extends MainEntryMapper
 {
     /**
      * Override the main mapper format.
+     *
+     * This is the usual format inside of the `Xlsx` file.
      */
     const DTS_FORMAT = 'Y-m-d H:i';
 
     const KEY_CONTENT_HINT = 'hint';
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * @var array
@@ -52,12 +46,10 @@ class EntryMapper extends MainEntryMapper
 
     /**
      * EntryMapper constructor.
-     * @param LoggerInterface $logger
      * @param array $map
      */
-    public function __construct(LoggerInterface $logger, array $map)
+    public function __construct(array $map)
     {
-        $this->logger = $logger;
         $this->map = $map;
     }
 
@@ -75,31 +67,6 @@ class EntryMapper extends MainEntryMapper
         $data[EntryMapper::KEY_ISSUE] = $this->getIssueFromData($data);
 
         return parent::fromData($data);
-    }
-
-    /**
-     * This implementation is very use-case specific.
-     *
-     * TODO: Move to a separate mapper class.
-     *
-     * @param string $string
-     * @return string
-     * @throws Exception
-     */
-    private function convertDateTimeFormat(?string $string): ?string
-    {
-        $dateTime = DateTime::createFromFormat('Y-m-d H:i', $string);
-
-        if (false === $dateTime) {
-            $this->logger->info('Could not create datetime.', [
-                'string' => $string,
-                'dateTime' => $dateTime,
-            ]);
-
-            return '';
-        }
-
-        return $dateTime->format(EntryMapper::DTS_FORMAT);
     }
 
     /**

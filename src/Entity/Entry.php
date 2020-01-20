@@ -44,12 +44,12 @@ class Entry
     private $datetimeTo;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $content;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $issue;
 
@@ -108,36 +108,36 @@ class Entry
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getContent(): string
+    public function getContent(): ?string
     {
         return $this->content;
     }
 
     /**
-     * @param string $content
+     * @param string|null $content
      * @return Entry
      */
-    public function setContent(string $content): Entry
+    public function setContent(?string $content): Entry
     {
         $this->content = $content;
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getIssue(): string
+    public function getIssue(): ?string
     {
         return $this->issue;
     }
 
     /**
-     * @param string $issue
+     * @param string|null $issue
      * @return Entry
      */
-    public function setIssue(string $issue): Entry
+    public function setIssue(?string $issue): Entry
     {
         $this->issue = $issue;
         return $this;

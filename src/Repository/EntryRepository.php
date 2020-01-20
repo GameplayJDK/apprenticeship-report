@@ -54,9 +54,9 @@ class EntryRepository implements EntryRepositoryInterface
 
     /**
      * @param Entry $entry
-     * @return bool
+     * @return int
      */
-    public function insertOne(Entry $entry): bool
+    public function insertOne(Entry $entry): int
     {
         $query = 'INSERT INTO entry (datetime_from, datetime_to, content, issue) VALUES (:datetime_from, :datetime_to, :content, :issue)';
         $parameter = [
@@ -71,21 +71,11 @@ class EntryRepository implements EntryRepositoryInterface
         $statement = $this->database->prepare($query);
         $statement->execute($data);
 
-        return $statement->rowCount() > 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated Unused.
-     */
-    public function countAll(): int
-    {
-        $query = 'SELECT count(id) FROM entry';
-
-        $statement = $this->database->prepare($query);
-        $statement->execute();
-
-        return $statement->fetchColumn();
+        if ($statement->rowCount() > 0) {
+            return $this->database->lastInsertId();
+        } else {
+            return -1;
+        }
     }
 
     /**
@@ -99,32 +89,53 @@ class EntryRepository implements EntryRepositoryInterface
         $statement = $this->database->prepare($query);
         $statement->execute();
 
-        $array = $statement->fetchAll();
+        if (false !== ($array = $statement->fetchAll())) {
+            return $this->entryMapper->fromDataArray($array);
+        }
 
-        return $this->entryMapper->fromDataArray($array);
+        return [];
     }
 
     /**
-     * @param int $offset
-     * @param int $limit
-     * @return array|Entry[]
+     * @param int $id
+     * @return Entry|null
      * @throws MapperException
-     * @deprecated Unused.
      */
-    public function getAllWithOffsetAndLimit(int $offset, int $limit): array
+    public function getOneById(int $id): ?Entry
     {
-        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry LIMIT :offset, :limit';
+        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry WHERE id = :id';
 
         $data = [
-            'offset' => $offset,
-            'limit' => $limit,
+            EntryMapper::KEY_ID => $id,
         ];
 
         $statement = $this->database->prepare($query);
         $statement->execute($data);
 
-        $array = $statement->fetchAll();
+        if (false !== ($array = $statement->fetch())) {
+            return $this->entryMapper->fromData($array);
+        }
 
-        return $this->entryMapper->fromDataArray($array);
+        return null;
+    }
+
+    /**
+     * @param Entry $one
+     * @return bool
+     */
+    public function updateOne(Entry $one): bool
+    {
+        // TODO: Implement updateOne() method.
+        return false;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function deleteOneById(int $id): bool
+    {
+        // TODO: Implement deleteOneById() method.
+        return false;
     }
 }

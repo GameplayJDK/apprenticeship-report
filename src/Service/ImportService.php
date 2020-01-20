@@ -34,6 +34,9 @@ use Psr\Log\LoggerInterface;
  */
 class ImportService
 {
+    /**
+     * Only `Xlsx` support for now.
+     */
     const TYPE_READER = 'Xlsx';
 
     /**
@@ -42,14 +45,14 @@ class ImportService
     private $logger;
 
     /**
-     * @var EntryRepositoryInterface
-     */
-    private $entryRepository;
-
-    /**
      * @var ImportEntryMapper
      */
     private $entryMapper;
+
+    /**
+     * @var EntryRepositoryInterface
+     */
+    private $entryRepository;
 
     /**
      * @var string
@@ -69,11 +72,11 @@ class ImportService
      * @param string $path
      * @param int $timeLimit
      */
-    public function __construct(LoggerInterface $logger, EntryRepositoryInterface $entryRepository, ImportEntryMapper $entryMapper, string $path, int $timeLimit)
+    public function __construct(LoggerInterface $logger, ImportEntryMapper $entryMapper, EntryRepositoryInterface $entryRepository, string $path, int $timeLimit)
     {
         $this->logger = $logger;
-        $this->entryRepository = $entryRepository;
         $this->entryMapper = $entryMapper;
+        $this->entryRepository = $entryRepository;
         $this->path = $path;
         $this->timeLimit = $timeLimit;
     }
@@ -120,7 +123,7 @@ class ImportService
             try {
                 $entry = $this->entryMapper->fromData($data);
 
-                if ($this->entryRepository->insertOne($entry)) {
+                if ($this->entryRepository->insertOne($entry) > -1) {
                     $this->logger->info('Could insert entry.', [
                         'index' => $index,
                         'row' => $row,

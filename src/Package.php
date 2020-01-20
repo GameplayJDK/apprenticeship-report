@@ -24,6 +24,7 @@ use App\Controller\ImportController;
 use App\Controller\IndexController;
 use App\Mapper\EntryMapper;
 use App\Mapper\Import\EntryMapper as ImportEntryMapper;
+use App\Mapper\Modify\EntryMapper as ModifyEntryMapper;
 use App\Repository\EntryRepository;
 use App\Repository\EntryRepositoryInterface;
 use App\Service\EntryService;
@@ -188,7 +189,14 @@ class Package extends PackageAbstract
     private function registerMapper(): void
     {
         $this->registerConfiguration(ImportEntryMapper::class, [
-            'map' => [],
+            'map' => [
+                ImportEntryMapper::KEY_ID => -1,
+                ImportEntryMapper::KEY_DATETIME_FROM => 'A',
+                ImportEntryMapper::KEY_DATETIME_TO => 'B',
+                ImportEntryMapper::KEY_CONTENT => 'C',
+                ImportEntryMapper::KEY_CONTENT_HINT => 'D',
+                ImportEntryMapper::KEY_ISSUE => 'E',
+            ],
         ]);
 
         /** @var array $configuration */
@@ -202,12 +210,14 @@ class Package extends PackageAbstract
             /** @var array $settings */
             $settings = $configuration[ImportEntryMapper::class];
 
-            /** @var LoggerInterface $logger */
-            $logger = $container[LoggerInterface::class];
             /** @var array $map */
             $map = $settings['map'];
 
-            return new ImportEntryMapper($logger, $map);
+            return new ImportEntryMapper($map);
+        });
+
+        $this->registerService(ModifyEntryMapper::class, function (Container $container): EntryMapper {
+            return new ModifyEntryMapper();
         });
     }
 
@@ -233,7 +243,7 @@ class Package extends PackageAbstract
         $this->registerConfiguration(ImportService::class, [
             // No limit when 0.
             'time_limit' => 0,
-            // Only Xslx support for now.
+            // Only `Xlsx` support for now.
             'path' => dirname(__DIR__) . '/import.xslx',
         ]);
 
@@ -246,12 +256,12 @@ class Package extends PackageAbstract
 
             /** @var LoggerInterface $logger */
             $logger = $container[LoggerInterface::class];
-            /** @var EntryRepositoryInterface $entryRepository */
-            $entryRepository = $container[EntryRepositoryInterface::class];
             /** @var ImportEntryMapper $entryMapper */
             $entryMapper = $container[ImportEntryMapper::class];
+            /** @var EntryRepositoryInterface $entryRepository */
+            $entryRepository = $container[EntryRepositoryInterface::class];
 
-            return new ImportService($logger, $entryRepository, $entryMapper, $settings['path'], $settings['time_limit']);
+            return new ImportService($logger, $entryMapper, $entryRepository, $settings['path'], $settings['time_limit']);
         });
     }
 
@@ -260,10 +270,12 @@ class Package extends PackageAbstract
         $this->registerService(EntryService::class, function (Container $container): EntryService {
             /** @var LoggerInterface $logger */
             $logger = $container[LoggerInterface::class];
+            /** @var ModifyEntryMapper $entryMapper */
+            $entryMapper = $container[ModifyEntryMapper::class];
             /** @var EntryRepositoryInterface $entryRepository */
             $entryRepository = $container[EntryRepositoryInterface::class];
 
-            return new EntryService($logger, $entryRepository);
+            return new EntryService($logger, $entryMapper, $entryRepository);
         });
     }
 
