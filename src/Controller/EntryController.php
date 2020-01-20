@@ -141,6 +141,8 @@ class EntryController implements ControllerInterface
      */
     public function createAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $error = false;
+
         if ('POST' === $request->getMethod()) {
             if (null !== ($dataArray = $request->getParsedBody()['entry'] ?? null) && is_array($dataArray)) {
                 $id = $this->entryService->createEntry($dataArray);
@@ -155,10 +157,14 @@ class EntryController implements ControllerInterface
                         ->withStatus(StatusCodeInterface::STATUS_FOUND);
                 }
             }
+
+            $error = true;
         }
 
         return $this->twig
-            ->render($response, 'entry/create.html.twig', []);
+            ->render($response, 'entry/create.html.twig', [
+                'error' => $error,
+            ]);
     }
 
     /**
@@ -229,10 +235,10 @@ class EntryController implements ControllerInterface
                     return $response
                         ->withHeader('Location', $path)
                         ->withStatus(StatusCodeInterface::STATUS_FOUND);
-                } else {
-                    $error = true;
                 }
             }
+
+            $error = true;
         }
 
         $data = $this->entryService->retrieveEntry($id);
@@ -272,19 +278,21 @@ class EntryController implements ControllerInterface
         $error = false;
 
         if ('POST' === $request->getMethod()) {
-            if (null !== ($dataArray = $request->getParsedBody()['entry'] ?? null) && is_array($dataArray)) {
-                $result = $this->entryService->deleteEntry($id, $dataArray);
+            if (null !== ($confirm = $request->getParsedBody()['confirm'] ?? null) && false !== ($confirm = (bool)$confirm)) {
+                if (null !== ($dataArray = $request->getParsedBody()['entry'] ?? null) && is_array($dataArray)) {
+                    $result = $this->entryService->deleteEntry($id, $dataArray);
 
-                if (true === $result) {
-                    $path = $this->routeParser->urlFor(static::ROUTE_INDEX);
+                    if (true === $result) {
+                        $path = $this->routeParser->urlFor(static::ROUTE_INDEX);
 
-                    return $response
-                        ->withHeader('Location', $path)
-                        ->withStatus(StatusCodeInterface::STATUS_FOUND);
-                } else {
-                    $error = true;
+                        return $response
+                            ->withHeader('Location', $path)
+                            ->withStatus(StatusCodeInterface::STATUS_FOUND);
+                    }
                 }
             }
+
+            $error = true;
         }
 
         $data = $this->entryService->retrieveEntry($id);

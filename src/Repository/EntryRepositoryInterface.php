@@ -46,10 +46,10 @@ interface EntryRepositoryInterface
     public function getOneById(int $id): ?Entry;
 
     /**
-     * @param Entry $one
+     * @param Entry $entry
      * @return bool
      */
-    public function updateOne(Entry $one): bool;
+    public function updateOne(Entry $entry): bool;
 
     /**
      * @param int $id

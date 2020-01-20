@@ -69,13 +69,13 @@ class EntryRepository implements EntryRepositoryInterface
         $data = array_intersect_key($this->entryMapper->toData($entry), array_flip($parameter));
 
         $statement = $this->database->prepare($query);
-        $statement->execute($data);
+        $result = $statement->execute($data);
 
-        if ($statement->rowCount() > 0) {
+        if ($statement->rowCount() > 0 && $result) {
             return $this->database->lastInsertId();
-        } else {
-            return -1;
         }
+
+        return -1;
     }
 
     /**
@@ -87,9 +87,9 @@ class EntryRepository implements EntryRepositoryInterface
         $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry';
 
         $statement = $this->database->prepare($query);
-        $statement->execute();
+        $result = $statement->execute();
 
-        if (false !== ($array = $statement->fetchAll())) {
+        if (false !== ($array = $statement->fetchAll()) && $result) {
             return $this->entryMapper->fromDataArray($array);
         }
 
@@ -110,9 +110,9 @@ class EntryRepository implements EntryRepositoryInterface
         ];
 
         $statement = $this->database->prepare($query);
-        $statement->execute($data);
+        $result = $statement->execute($data);
 
-        if (false !== ($array = $statement->fetch())) {
+        if (false !== ($array = $statement->fetch()) && $result) {
             return $this->entryMapper->fromData($array);
         }
 
@@ -120,13 +120,27 @@ class EntryRepository implements EntryRepositoryInterface
     }
 
     /**
-     * @param Entry $one
+     * @param Entry $entry
      * @return bool
      */
-    public function updateOne(Entry $one): bool
+    public function updateOne(Entry $entry): bool
     {
-        // TODO: Implement updateOne() method.
-        return false;
+        $query = 'UPDATE entry SET datetime_from = :datetime_from, datetime_to = :datetime_to, content = :content, issue = :issue WHERE id = :id';
+        $parameter = [
+            EntryMapper::KEY_ID,
+            EntryMapper::KEY_DATETIME_FROM,
+            EntryMapper::KEY_DATETIME_TO,
+            EntryMapper::KEY_CONTENT,
+            EntryMapper::KEY_ISSUE,
+        ];
+
+        $data = array_intersect_key($this->entryMapper->toData($entry), array_flip($parameter));
+
+        $statement = $this->database->prepare($query);
+        $result = $statement->execute($data);
+
+        // In the case that nothing changed, the affected rows could be 0, thus use the result instead.
+        return $statement->rowCount() > 0 || $result;
     }
 
     /**
@@ -135,7 +149,15 @@ class EntryRepository implements EntryRepositoryInterface
      */
     public function deleteOneById(int $id): bool
     {
-        // TODO: Implement deleteOneById() method.
-        return false;
+        $query = 'DELETE FROM entry WHERE id = :id';
+
+        $data = [
+            EntryMapper::KEY_ID => $id,
+        ];
+
+        $statement = $this->database->prepare($query);
+        $result = $statement->execute($data);
+
+        return $statement->rowCount() > 0 && $result;
     }
 }
