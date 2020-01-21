@@ -19,3 +19,12 @@
 .min-width-0 {
   min-width: 0;
 }
+
+.entry {
+  .entry-headline {
+  }
+
+  .entry-text {
+    white-space: pre-line;
+  }
+}

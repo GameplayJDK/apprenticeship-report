@@ -1,1 +1,32 @@
 {% extends '_page.html.twig' %}
+
+{% block title %}print{% endblock %}
+
+{% block content %}
+    <div class="fixed-top">
+        <div class="container">
+            <img src="/asset/image/brand.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            apprenticeship-report
+        </div>
+    </div>
+
+    <div class="container">
+        {% for entry in data.list %}
+            <div class="entry p-3">
+                <h3 class="entry-headline">
+                    Woche {{ entry.datetimeFrom|date() }} bis {{ entry.datetimeTo|date() }}
+
+                    <small class="badge badge-primary d-print-none">{{ entry.issue }}</small>
+                </h3>
+
+                <p class="entry-text">
+                    {{ entry.content }}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="fixed-top">
+
+    </div>
+{% endblock %}

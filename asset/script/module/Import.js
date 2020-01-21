@@ -56,6 +56,10 @@ Module('App.Import', (function () {
 
     // Do everything for initialization:
     function initialize() {
+        if (!button || !modal) {
+            return;
+        }
+
         registerEvent();
     }
 

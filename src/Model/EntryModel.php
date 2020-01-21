@@ -26,7 +26,7 @@ use App\Entity\Entry;
  *
  * @package App\Model
  */
-class OneEntryModel
+class EntryModel
 {
     /**
      * @var Entry|null
@@ -51,9 +51,9 @@ class OneEntryModel
 
     /**
      * @param Entry|null $entry
-     * @return OneEntryModel
+     * @return EntryModel
      */
-    public function setEntry(?Entry $entry): OneEntryModel
+    public function setEntry(?Entry $entry): EntryModel
     {
         $this->entry = $entry;
         return $this;

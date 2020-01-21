@@ -97,6 +97,25 @@ class EntryRepository implements EntryRepositoryInterface
     }
 
     /**
+     * @return array|Entry[]
+     * @throws MapperException
+     */
+    public function getAllManual(): array
+    {
+        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry WHERE datetime_from != datetime_to';
+
+        $statement = $this->database->prepare($query);
+        $result = $statement->execute();
+
+        if (false !== ($array = $statement->fetchAll()) && $result) {
+            return $this->entryMapper->fromDataArray($array);
+        }
+
+        return [];
+    }
+
+
+    /**
      * @param int $id
      * @return Entry|null
      * @throws MapperException

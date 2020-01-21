@@ -40,6 +40,11 @@ interface EntryRepositoryInterface
     public function getAll(): array;
 
     /**
+     * @return array|Entry[]
+     */
+    public function getAllManual(): array;
+
+    /**
      * @param int $id
      * @return Entry|null
      */

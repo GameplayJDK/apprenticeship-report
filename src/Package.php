@@ -286,7 +286,10 @@ class Package extends PackageAbstract
     private function registerPrintService(): void
     {
         $this->registerService(PrintService::class, function (Container $container): PrintService {
-            return new PrintService();
+            /** @var EntryRepositoryInterface $entryRepository */
+            $entryRepository = $container[EntryRepositoryInterface::class];
+
+            return new PrintService($entryRepository);
         });
     }
 

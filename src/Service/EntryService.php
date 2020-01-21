@@ -23,7 +23,7 @@ use App\Entity\Entry;
 use App\Exception\MapperException;
 use App\Mapper\Modify\EntryMapper as ModifyEntryMapper;
 use App\Model\ListEntryModel;
-use App\Model\OneEntryModel;
+use App\Model\EntryModel;
 use App\Repository\EntryRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
@@ -68,9 +68,9 @@ class EntryService
      */
     public function createEntry(array $dataArray): int
     {
-        $one = $this->createEntryFromDataArray($dataArray);
+        $entry = $this->createEntryFromDataArray($dataArray);
 
-        if (null !== $one && ($id = $this->entryRepository->insertOne($one)) > -1) {
+        if (null !== $entry && ($id = $this->entryRepository->insertOne($entry)) > -1) {
             return $id;
         }
 
@@ -82,22 +82,22 @@ class EntryService
      */
     public function retrieveEntryList(): ListEntryModel
     {
-        $all = $this->entryRepository->getAll();
+        $list = $this->entryRepository->getAll();
 
         return (new ListEntryModel())
-            ->setList($all);
+            ->setList($list);
     }
 
     /**
      * @param int $id
-     * @return OneEntryModel
+     * @return EntryModel
      */
-    public function retrieveEntry(int $id): OneEntryModel
+    public function retrieveEntry(int $id): EntryModel
     {
-        $one = $this->entryRepository->getOneById($id);
+        $entry = $this->entryRepository->getOneById($id);
 
-        return (new OneEntryModel())
-            ->setEntry($one);
+        return (new EntryModel())
+            ->setEntry($entry);
     }
 
     /**
@@ -107,10 +107,10 @@ class EntryService
      */
     public function updateEntry(int $id, array $dataArray): bool
     {
-        $one = $this->createEntryFromDataArray($dataArray);
+        $entry = $this->createEntryFromDataArray($dataArray);
 
-        return (null !== $one) && ($one->getId() === $id) &&
-            $this->entryRepository->updateOne($one);
+        return (null !== $entry) && ($entry->getId() === $id) &&
+            $this->entryRepository->updateOne($entry);
     }
 
     /**
@@ -120,9 +120,9 @@ class EntryService
      */
     public function deleteEntry(int $id, array $dataArray): bool
     {
-        $one = $this->createEntryFromDataArray($dataArray);
+        $entry = $this->createEntryFromDataArray($dataArray);
 
-        return (null !== $one) && ($one->getId() === $id) &&
+        return (null !== $entry) && ($entry->getId() === $id) &&
             $this->entryRepository->deleteOneById($id);
     }
 

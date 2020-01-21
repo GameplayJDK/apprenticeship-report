@@ -82,7 +82,11 @@ class PrintController implements ControllerInterface
      */
     public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $data = $this->printService->getEntryList();
+
         return $this->twig
-            ->render($response, 'print/index.html.twig', []);
+            ->render($response, 'print/index.html.twig', [
+                'data' => $data,
+            ]);
     }
 }

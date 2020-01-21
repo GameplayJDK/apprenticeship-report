@@ -19,6 +19,9 @@
 
 namespace App\Service;
 
+use App\Model\ListEntryModel;
+use App\Repository\EntryRepositoryInterface;
+
 /**
  * Class PrintService
  *
@@ -26,4 +29,28 @@ namespace App\Service;
  */
 class PrintService
 {
+    /**
+     * @var EntryRepositoryInterface
+     */
+    private $entryRepository;
+
+    /**
+     * PrintService constructor.
+     * @param EntryRepositoryInterface $entryRepository
+     */
+    public function __construct(EntryRepositoryInterface $entryRepository)
+    {
+        $this->entryRepository = $entryRepository;
+    }
+
+    /**
+     * @return ListEntryModel
+     */
+    public function getEntryList(): ListEntryModel
+    {
+        $list = $this->entryRepository->getAllManual();
+
+        return (new ListEntryModel())
+            ->setList($list);
+    }
 }
