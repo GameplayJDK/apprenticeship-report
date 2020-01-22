@@ -20,3 +20,5 @@ var/log
 !var/log/.gitignore
 
 *.xlsx
+
+*.pdf
