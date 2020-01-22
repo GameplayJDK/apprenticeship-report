@@ -9,10 +9,14 @@ vendor/
 
 # Application
 
-public/asset/*
+asset/image/responsive
+!asset/image/responsive/.gitignore
+asset/image/company.png
+
+public/asset
 !public/asset/.gitignore
 
-var/log/*
+var/log
 !var/log/.gitignore
 
 *.xlsx

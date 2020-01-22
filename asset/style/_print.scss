@@ -16,6 +16,53 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-.min-width-0 {
-  min-width: 0;
+// framework
+
+@page {
+  size: A3;
+
+  margin: 0;
+}
+
+.container-print {
+  @extend .container;
+
+  // Reset the container properties when printing, so only the table decides over the layout.
+  @media print {
+    max-width: unset;
+
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.visible-print {
+  visibility: hidden;
+
+  @media print {
+    visibility: visible;
+  }
+}
+
+.invisible-print {
+  visibility: visible;
+
+  @media print {
+    visibility: hidden;
+  }
+}
+
+// style
+
+#print {
+  .entry {
+    break-inside: avoid;
+
+    .entry-headline {
+    }
+
+    .entry-text {
+      white-space: pre-line;
+    }
+  }
 }

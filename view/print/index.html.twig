@@ -3,30 +3,71 @@
 {% block title %}print{% endblock %}
 
 {% block content %}
-    <div class="fixed-top">
-        <div class="container">
-            <img src="/asset/image/brand.png" width="30" height="30" class="d-inline-block align-top" alt="">
-            apprenticeship-report
-        </div>
-    </div>
+    <div id="print" class="container-print table-responsive">
+        <table class="table table-borderless">
+            <thead>
+            <tr class="bg-white p-2">
+                <th>
+                    <header class="d-flex justify-content-between">
+                        <div class="p-2">
+                            <img src="/asset/image/company.png" width="auto" height="30px"
+                                 class="d-inline-block align-top" alt="">
+                        </div>
 
-    <div class="container">
-        {% for entry in data.list %}
-            <div class="entry p-3">
-                <h3 class="entry-headline">
-                    Woche {{ entry.datetimeFrom|date() }} bis {{ entry.datetimeTo|date() }}
+                        <div class="p-2 text-right">
+                            author name
+                        </div>
+                    </header>
+                </th>
+            </tr>
+            </thead>
 
-                    <small class="badge badge-primary d-print-none">{{ entry.issue }}</small>
-                </h3>
+            <tbody>
+            {% for entry in data.list %}
+                {% for i in 0..10 %}
+                    <tr>
+                        <td>
+                            <div class="entry container border border-dark">
+                                <div class="entry-headline">
+                                    <h3>
+                                        Woche {{ '%03d'|format(loop.index) }}
+                                    </h3>
 
-                <p class="entry-text">
-                    {{ entry.content }}
-                </p>
-            </div>
-        {% endfor %}
-    </div>
+                                    {{ entry.datetimeFrom|date('d-m-Y') }} - {{ entry.datetimeTo|date('d-m-Y') }}
+                                </div>
 
-    <div class="fixed-top">
+                                <div class="entry-text">{{ entry.content }}</div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            <tr class="d-flex flex-grow-1">
+            </tr>
+            </tbody>
 
+            <tfoot>
+            <tr class="bg-white p-2">
+                <td>
+                    <footer class="d-flex justify-content-between invisible-print">
+                        {% block footer %}
+                            <div class="p-2">
+                                generated
+                            </div>
+
+                            <div class="p-2">
+                            </div>
+                        {% endblock %}
+                    </footer>
+
+                    <div class="d-none d-print-block fixed-bottom bg-white">
+                        <footer class="d-flex justify-content-between p-2">
+                            {{ block('footer') }}
+                        </footer>
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
     </div>
 {% endblock %}

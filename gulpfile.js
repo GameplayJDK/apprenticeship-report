@@ -65,7 +65,7 @@ option = (function (option) {
 const path = {
     style: {
         // Additional scss dependencies are added through @import statements.
-        src: './asset/style/main.scss', // TODO: This stops the watch task from working
+        src: './asset/style/main.scss',
         dest: './public/asset/style',
         map: './map',
         // Delete this when cleaning up.
