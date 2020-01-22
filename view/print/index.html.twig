@@ -2,6 +2,8 @@
 
 {% block title %}print{% endblock %}
 
+{# this page is written in german #}
+
 {% block content %}
     <div id="print" class="container-print table-responsive">
         <table class="table table-borderless">
@@ -27,16 +29,17 @@
                 {% for i in 0..10 %}
                     <tr>
                         <td>
-                            <div class="entry container border border-dark">
-                                <div class="entry-headline">
+                            <div class="entry container border-bottom border-dark">
+                                <div class="entry-headline mt-3">
                                     <h3>
                                         Woche {{ '%03d'|format(loop.index) }}
                                     </h3>
 
-                                    {{ entry.datetimeFrom|date('d-m-Y') }} - {{ entry.datetimeTo|date('d-m-Y') }}
+                                    <small>{{ entry.datetimeFrom|date('d.m.Y') }}
+                                        - {{ entry.datetimeTo|date('d.m.Y') }}</small>
                                 </div>
 
-                                <div class="entry-text">{{ entry.content }}</div>
+                                <div class="entry-text px-2 my-3">{{ entry.content }}</div>
                             </div>
                         </td>
                     </tr>
