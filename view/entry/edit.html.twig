@@ -65,9 +65,19 @@
                            value="{{ data.entry.issue }}" placeholder="issue">
                 </div>
 
-                <button class="btn btn-primary" type="submit" name="submit">
-                    save
-                </button>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit" name="submit" value="save">
+                        save
+                    </button>
+
+                    or
+
+                    <button class="btn btn-outline-primary" type="submit" name="submit" value="import">
+                        import
+                    </button>
+
+                    (will override the current content)
+                </div>
             </form>
         </div>
     </div>

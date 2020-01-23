@@ -58,4 +58,12 @@ class ListEntryModel
         $this->list = $list;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return empty($this->list);
+    }
 }

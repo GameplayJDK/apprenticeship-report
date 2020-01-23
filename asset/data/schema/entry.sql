@@ -4,8 +4,8 @@ create table if not exists entry
 		primary key,
 	datetime_from datetime not null,
 	datetime_to datetime not null,
-	content varchar(1024) default '' not null,
-	issue varchar(128) default '' not null
+	content varchar(4096) null,
+	issue varchar(256) null
 );
 
 create index if not exists entry_datetime_from_index

@@ -225,7 +225,15 @@ class EntryController implements ControllerInterface
 
         if ('POST' === $request->getMethod()) {
             if (null !== ($dataArray = $request->getParsedBody()['entry'] ?? null) && is_array($dataArray)) {
-                $result = $this->entryService->updateEntry($id, $dataArray);
+                $button = $request->getParsedBody()['submit'] ?? 'save';
+                $result = false;
+
+                if ('import' === $button) {
+                    $result = $this->entryService->importEntry($id, $dataArray);
+                }
+                if ('save' === $button) {
+                    $result = $this->entryService->updateEntry($id, $dataArray);
+                }
 
                 if (true === $result) {
                     $path = $this->routeParser->urlFor(static::ROUTE_VIEW, [

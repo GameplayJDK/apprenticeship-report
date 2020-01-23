@@ -20,6 +20,7 @@
 namespace App\Repository;
 
 use App\Entity\Entry;
+use DateTime;
 
 /**
  * Interface EntryRepositoryInterface
@@ -38,6 +39,13 @@ interface EntryRepositoryInterface
      * @return array|Entry[]
      */
     public function getAll(): array;
+
+    /**
+     * @param DateTime $datetimeFrom
+     * @param DateTime $datetimeTo
+     * @return array|Entry[]
+     */
+    public function getAllBetweenDatetimeFromAndDatetimeTo(DateTime $datetimeFrom, DateTime $datetimeTo): array;
 
     /**
      * @return array|Entry[]

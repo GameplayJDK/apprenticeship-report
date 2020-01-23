@@ -22,6 +22,7 @@ namespace App\Repository;
 use App\Entity\Entry;
 use App\Exception\MapperException;
 use App\Mapper\EntryMapper;
+use DateTime;
 use PDO;
 
 /**
@@ -97,6 +98,34 @@ class EntryRepository implements EntryRepositoryInterface
     }
 
     /**
+     * @param DateTime $datetimeFrom
+     * @param DateTime $datetimeTo
+     * @return array|Entry[]
+     * @throws MapperException
+     */
+    public function getAllBetweenDatetimeFromAndDatetimeTo(DateTime $datetimeFrom, DateTime $datetimeTo): array
+    {
+        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry WHERE datetime_from BETWEEN :datetime_from_begin AND :datetime_from_end AND datetime_to BETWEEN :datetime_to_begin AND :datetime_to_end';
+
+        $data = [
+            EntryMapper::KEY_DATETIME_FROM . '_begin' => $datetimeFrom->format(EntryMapper::DTS_FORMAT),
+            EntryMapper::KEY_DATETIME_FROM . '_end' => $datetimeTo->format(EntryMapper::DTS_FORMAT),
+            EntryMapper::KEY_DATETIME_TO . '_begin' => $datetimeFrom->format(EntryMapper::DTS_FORMAT),
+            EntryMapper::KEY_DATETIME_TO . '_end' => $datetimeTo->format(EntryMapper::DTS_FORMAT),
+        ];
+
+        $statement = $this->database->prepare($query);
+        $result = $statement->execute($data);
+
+        if (false !== ($array = $statement->fetchAll()) && $result) {
+            return $this->entryMapper->fromDataArray($array);
+        }
+
+        return [];
+    }
+
+
+    /**
      * @return array|Entry[]
      * @throws MapperException
      */
@@ -113,7 +142,6 @@ class EntryRepository implements EntryRepositoryInterface
 
         return [];
     }
-
 
     /**
      * @param int $id

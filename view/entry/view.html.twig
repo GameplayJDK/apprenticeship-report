@@ -40,7 +40,7 @@
             <table class="table">
                 <thead class="thead-light">
                 <tr>
-                    <th scope="col">field</th>
+                    <th scope="col" style="width: 30%;">field</th>
                     <th scope="col">value</th>
                 </tr>
                 </thead>
@@ -59,7 +59,9 @@
                 </tr>
                 <tr>
                     <th scope="row">content</th>
-                    <td>{{ data.entry.content }}</td>
+                    <td>
+                        <div class="pre-scrollable preserve-line-break">{{ data.entry.content }}</div>
+                    </td>
                 </tr>
                 <tr>
                     <th scope="row">issue</th>

@@ -22,8 +22,8 @@ namespace App\Service;
 use App\Entity\Entry;
 use App\Exception\MapperException;
 use App\Mapper\Modify\EntryMapper as ModifyEntryMapper;
-use App\Model\ListEntryModel;
 use App\Model\EntryModel;
+use App\Model\ListEntryModel;
 use App\Repository\EntryRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
@@ -111,6 +111,36 @@ class EntryService
 
         return (null !== $entry) && ($entry->getId() === $id) &&
             $this->entryRepository->updateOne($entry);
+    }
+
+    /**
+     * @param int $id
+     * @param array $dataArray
+     * @return bool
+     */
+    public function importEntry(int $id, array $dataArray): bool
+    {
+        $entry = $this->createEntryFromDataArray($dataArray);
+
+        if (null !== $entry && $entry->getId() === $id) {
+            $list = $this->entryRepository->getAllBetweenDatetimeFromAndDatetimeTo($entry->getDatetimeFrom(), $entry->getDatetimeTo());
+
+            $listContent = array_map(function (Entry $entry): string {
+                $date = $entry->getDatetimeFrom()
+                    ->format('d-m-Y');
+                $content = $entry->getContent();
+
+                return "($date) $content";
+            }, $list);
+            $content = implode(PHP_EOL, $listContent);
+
+            $entry->setContent($content);
+            $entry->setIssue(null);
+
+            return $this->entryRepository->updateOne($entry);
+        }
+
+        return false;
     }
 
     /**

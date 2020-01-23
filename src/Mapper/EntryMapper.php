@@ -154,8 +154,8 @@ class EntryMapper
                 v::key(static::KEY_ID, v::intVal(), $idMandatory),
                 v::key(static::KEY_DATETIME_FROM, v::date(static::DTS_FORMAT), true),
                 v::key(static::KEY_DATETIME_TO, v::date(static::DTS_FORMAT), true),
-                v::key(static::KEY_CONTENT, v::stringType()->length(0, 1024, true), false),
-                v::key(static::KEY_ISSUE, v::stringType()->length(0, 128, true), false),
+                v::key(static::KEY_CONTENT, v::stringType()->length(0, 4096, true), false),
+                v::key(static::KEY_ISSUE, v::stringType()->length(0, 256, true), false),
             ]);
     }
 }
