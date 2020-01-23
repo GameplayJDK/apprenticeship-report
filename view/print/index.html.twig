@@ -17,7 +17,7 @@
                         </div>
 
                         <div class="p-2 text-right">
-                            author name
+                            {{ extra_data.author }}
                         </div>
                     </header>
                 </th>
@@ -52,16 +52,18 @@
             <tfoot>
             <tr class="bg-white p-2">
                 <td>
-                    <footer class="d-flex justify-content-between invisible-print">
-                        {% block footer %}
-                            <div class="p-2">
-                                generated
-                            </div>
+                    <div class="invisible-print">
+                        <footer class="d-flex justify-content-between">
+                            {% block footer %}
+                                <div class="p-2">
+                                    {{ extra_data.information }}
+                                </div>
 
-                            <div class="p-2">
-                            </div>
-                        {% endblock %}
-                    </footer>
+                                <div class="p-2">
+                                </div>
+                            {% endblock %}
+                        </footer>
+                    </div>
 
                     <div class="d-none d-print-block fixed-bottom bg-white">
                         <footer class="d-flex justify-content-between p-2">

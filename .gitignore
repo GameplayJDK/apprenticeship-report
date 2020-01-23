@@ -22,3 +22,5 @@ var/log
 *.xlsx
 
 *.pdf
+
+app/print_service_extra_data.php

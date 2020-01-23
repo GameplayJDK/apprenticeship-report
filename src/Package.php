@@ -20,7 +20,6 @@
 namespace App;
 
 use App\Controller\EntryController;
-use App\Controller\ImportController;
 use App\Controller\IndexController;
 use App\Controller\PrintController;
 use App\Mapper\EntryMapper;
@@ -283,13 +282,26 @@ class Package extends PackageAbstract
         });
     }
 
+    /**
+     * @throws PackageException
+     */
     private function registerPrintService(): void
     {
-        $this->registerService(PrintService::class, function (Container $container): PrintService {
+        $this->registerConfiguration(PrintService::class, [
+            'extra_data' => [],
+        ]);
+
+        /** @var array $configuration */
+        $configuration = $this->container[static::SERVICE_NAME_CONFIGURATION];
+
+        $this->registerService(PrintService::class, function (Container $container) use ($configuration): PrintService {
+            /** @var array $settings */
+            $settings = $configuration[PrintService::class];
+
             /** @var EntryRepositoryInterface $entryRepository */
             $entryRepository = $container[EntryRepositoryInterface::class];
 
-            return new PrintService($entryRepository);
+            return new PrintService($entryRepository, $settings['extra_data']);
         });
     }
 

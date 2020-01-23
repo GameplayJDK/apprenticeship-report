@@ -19,8 +19,12 @@
 
 use App\Mapper\Import\EntryMapper as ImportEntryMapper;
 use App\Service\ImportService;
+use App\Service\PrintService;
 use Monolog\Logger;
 use Slim\Views\Twig;
+
+$extraDataPath = dirname(__DIR__) . '/app/print_service_extra_data.php';
+$extraData = is_file($extraDataPath) ? require $extraDataPath : [];
 
 return [
     Twig::class => [
@@ -49,7 +53,7 @@ return [
 
     ImportService::class => [
         'time_limit' => 0,
-        'path' => dirname(__DIR__) . '/import.xslx'
+        'path' => dirname(__DIR__) . '/import.xslx',
     ],
 
     ImportEntryMapper::class => [
@@ -61,5 +65,9 @@ return [
             ImportEntryMapper::KEY_CONTENT_HINT => 'T',
             ImportEntryMapper::KEY_ISSUE => 'A',
         ],
+    ],
+
+    PrintService::class => [
+        'extra_data' => $extraData,
     ],
 ];

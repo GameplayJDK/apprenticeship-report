@@ -39,7 +39,7 @@ use Pimple\Psr11\Container as Psr11Container;
 use Slim\Factory\AppFactory;
 
 $configuration = [];
-$configuration[Package::SERVICE_NAME_CONFIGURATION] = require __DIR__ . '/configuration.php';
+$configuration[Package::SERVICE_NAME_CONFIGURATION] = require dirname(__DIR__) . '/app/configuration.php';
 
 $container = new Container($configuration);
 AppFactory::setContainer(new Psr11Container($container));

@@ -35,12 +35,19 @@ class PrintService
     private $entryRepository;
 
     /**
+     * @var array
+     */
+    private $extraData;
+
+    /**
      * PrintService constructor.
      * @param EntryRepositoryInterface $entryRepository
+     * @param array $extraData
      */
-    public function __construct(EntryRepositoryInterface $entryRepository)
+    public function __construct(EntryRepositoryInterface $entryRepository, array $extraData)
     {
         $this->entryRepository = $entryRepository;
+        $this->extraData = $extraData;
     }
 
     /**
@@ -52,5 +59,13 @@ class PrintService
 
         return (new ListEntryModel())
             ->setList($list);
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtraData(): array
+    {
+        return $this->extraData;
     }
 }
