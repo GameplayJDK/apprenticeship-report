@@ -46,6 +46,14 @@ return [
 
 The key value pairs will be pushed into the print template (`./view/print/index.html.twig`) as `extra_data`.
 
+For convenience add a new hosts entry pointing `apprenticeship-report.local` to `127.0.0.1`.
+
+You can run the application on your internal PHP web server using the following command:
+
+```bash
+php -S apprenticeship-report.local:80 -t ./public ./public/index.php
+```
+
 ## Usage
 
 > **Print:**
@@ -53,6 +61,8 @@ The key value pairs will be pushed into the print template (`./view/print/index.
 > chrome --headless --disable-gpu --print-to-pdf=<PROJECT_DIRECTORY>/print-test.pdf http://apprenticeship-report.local/print
 > ```
 > The above command will generate a pdf file at `<PROJECT_DIRECTORY>/print-test.pdf`.
+
+TODO
 
 ## License
 
