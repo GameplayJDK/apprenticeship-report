@@ -21,7 +21,9 @@
             <div class="mb-3">
                 <div class="card card-body">
                     <p class="h3">
-                        about <mark>apprenticeship-report</mark>:
+                        about
+                        <mark>apprenticeship-report</mark>
+                        :
                     </p>
 
                     <p>
@@ -38,29 +40,32 @@
                         the following table shows the current import configuration
                     </p>
 
-                    <table class="table">
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col">option</th>
-                            <th scope="col">value</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for option, value in import.configuration %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
                             <tr>
-                                <th scope="row">
-                                    <code>{{ option }}</code>
-                                </th>
-                                <td>
-                                    <code>{{ value }}</code>
-                                </td>
+                                <th scope="col">option</th>
+                                <th scope="col">value</th>
                             </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {% for option, value in import.configuration %}
+                                <tr>
+                                    <th scope="row">
+                                        <code>{{ option }}</code>
+                                    </th>
+                                    <td>
+                                        <code>{{ value }}</code>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
                     <p>
-                        to import the file at the <code>path</code> with the <code>time_limit</code> shown above, click import
+                        to import the file at the <code>path</code> with the <code>time_limit</code> shown above, click
+                        import
                     </p>
 
                     <button id="import" class="btn btn-info" data-url="{{ url_for('index.import') }}">
@@ -71,7 +76,8 @@
         </div>
     </div>
 
-    <div id="modalImport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalImportLabel" aria-hidden="true">
+    <div id="modalImport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalImportLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">

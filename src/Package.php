@@ -261,7 +261,7 @@ class Package extends PackageAbstract
             // No limit when 0.
             'time_limit' => 0,
             // Only `Xlsx` support for now.
-            'path' => dirname(__DIR__) . '/import.xslx',
+            'path' => dirname(__DIR__) . '/import.xlsx',
         ]);
 
         /** @var array $configuration */

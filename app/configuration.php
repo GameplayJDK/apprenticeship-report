@@ -53,7 +53,7 @@ return [
 
     ImportService::class => [
         'time_limit' => 0,
-        'path' => dirname(__DIR__) . '/import.xslx',
+        'path' => dirname(__DIR__) . '/import.xlsx',
     ],
 
     ImportEntryMapper::class => [
