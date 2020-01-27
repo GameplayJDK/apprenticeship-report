@@ -105,7 +105,7 @@ class EntryRepository implements EntryRepositoryInterface
      */
     public function getAllBetweenDatetimeFromAndDatetimeTo(DateTime $datetimeFrom, DateTime $datetimeTo): array
     {
-        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry WHERE datetime_from BETWEEN :datetime_from_begin AND :datetime_from_end AND datetime_to BETWEEN :datetime_to_begin AND :datetime_to_end';
+        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry WHERE datetime_from BETWEEN :datetime_from_begin AND :datetime_from_end AND datetime_to BETWEEN :datetime_to_begin AND :datetime_to_end ORDER BY issue DESC';
 
         $data = [
             EntryMapper::KEY_DATETIME_FROM . '_begin' => $datetimeFrom->format(EntryMapper::DTS_FORMAT),
