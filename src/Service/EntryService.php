@@ -89,6 +89,17 @@ class EntryService
     }
 
     /**
+     * @return ListEntryModel
+     */
+    public function retrieveEntryListManual(): ListEntryModel
+    {
+        $list = $this->entryRepository->getAllManual();
+
+        return (new ListEntryModel())
+            ->setList($list);
+    }
+
+    /**
      * @param int $id
      * @return EntryModel
      */
@@ -125,14 +136,7 @@ class EntryService
         if (null !== $entry && $entry->getId() === $id) {
             $list = $this->entryRepository->getAllBetweenDatetimeFromAndDatetimeTo($entry->getDatetimeFrom(), $entry->getDatetimeTo());
 
-            $listContent = array_map(function (Entry $entry): string {
-                $date = $entry->getDatetimeFrom()
-                    ->format('d-m-Y');
-                $content = $entry->getContent();
-
-                return "($date) $content";
-            }, $list);
-            $content = implode(PHP_EOL, $listContent);
+            $content = $this->importEntryContentFromList($list);
 
             $entry->setContent($content);
             $entry->setIssue(null);
@@ -183,5 +187,22 @@ class EntryService
         }
 
         return $entry;
+    }
+
+    /**
+     * @param array|Entry[] $list
+     * @return string
+     */
+    public function importEntryContentFromList(array $list)
+    {
+        $listContent = array_map(function (Entry $entry): string {
+            $date = $entry->getDatetimeFrom()
+                ->format('d-m-Y');
+            $content = $entry->getContent();
+
+            return "($date) $content";
+        }, $list);
+
+        return implode(PHP_EOL, $listContent);
     }
 }

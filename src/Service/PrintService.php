@@ -30,9 +30,9 @@ use App\Repository\EntryRepositoryInterface;
 class PrintService
 {
     /**
-     * @var EntryRepositoryInterface
+     * @var EntryService
      */
-    private $entryRepository;
+    private $entryService;
 
     /**
      * @var array
@@ -41,12 +41,12 @@ class PrintService
 
     /**
      * PrintService constructor.
-     * @param EntryRepositoryInterface $entryRepository
+     * @param EntryService $entryService
      * @param array $extraData
      */
-    public function __construct(EntryRepositoryInterface $entryRepository, array $extraData)
+    public function __construct(EntryService $entryService, array $extraData)
     {
-        $this->entryRepository = $entryRepository;
+        $this->entryService = $entryService;
         $this->extraData = $extraData;
     }
 
@@ -55,10 +55,7 @@ class PrintService
      */
     public function getEntryList(): ListEntryModel
     {
-        $list = $this->entryRepository->getAllManual();
-
-        return (new ListEntryModel())
-            ->setList($list);
+        return $this->entryService->retrieveEntryListManual();
     }
 
     /**

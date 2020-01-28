@@ -298,10 +298,10 @@ class Package extends PackageAbstract
             /** @var array $settings */
             $settings = $configuration[PrintService::class];
 
-            /** @var EntryRepositoryInterface $entryRepository */
-            $entryRepository = $container[EntryRepositoryInterface::class];
+            /** @var EntryService $entryService */
+            $entryService = $container[EntryService::class];
 
-            return new PrintService($entryRepository, $settings['extra_data']);
+            return new PrintService($entryService, $settings['extra_data']);
         });
     }
 

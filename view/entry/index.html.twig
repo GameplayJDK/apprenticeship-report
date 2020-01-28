@@ -10,12 +10,37 @@
                     <h1>list entry</h1>
 
                     <div class="flex-shrink-0">
+                        <div class="dropdown d-inline">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                filter
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item{% if 'manual' is not same as(filter) %} active{% endif %}" href="{{ url_for('entry.index', {}, {
+                                    'filter': 'none',
+                                }) }}">
+                                    none
+                                </a>
+                                <a class="dropdown-item{% if 'manual' is same as(filter) %} active{% endif %}" href="{{ url_for('entry.index', {}, {
+                                    'filter': 'manual',
+                                }) }}">
+                                    manual
+                                </a>
+                            </div>
+                        </div>
+
                         <a class="btn btn-sm btn-success" href="{{ url_for('entry.create') }}">
                             create
                         </a>
                     </div>
                 </div>
             </div>
+
+            {% if 'manual' is same as(filter) %}
+                <div class="alert alert-info" role="alert">
+                    the filter is set to <code>manual</code> by default
+                </div>
+            {% endif %}
 
             <div class="list-group">
                 {% for entry in data.list %}

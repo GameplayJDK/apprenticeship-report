@@ -119,10 +119,15 @@ class EntryController implements ControllerInterface
      */
     public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $data = $this->entryService->retrieveEntryList();
+        $filter = $request->getQueryParams()['filter'] ?? 'manual';
+
+        $data = ('manual' === $filter)
+            ? $this->entryService->retrieveEntryListManual()
+            : $this->entryService->retrieveEntryList();
 
         return $this->twig
             ->render($response, 'entry/index.html.twig', [
+                'filter' => $filter,
                 'data' => $data,
             ]);
     }
