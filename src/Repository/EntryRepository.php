@@ -85,7 +85,7 @@ class EntryRepository implements EntryRepositoryInterface
      */
     public function getAll(): array
     {
-        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry';
+        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry ORDER BY datetime_from DESC';
 
         $statement = $this->database->prepare($query);
         $result = $statement->execute();
@@ -131,7 +131,7 @@ class EntryRepository implements EntryRepositoryInterface
      */
     public function getAllManual(): array
     {
-        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry WHERE datetime_from != datetime_to';
+        $query = 'SELECT id, datetime_from, datetime_to, content, issue FROM entry WHERE datetime_from != datetime_to ORDER BY datetime_from DESC';
 
         $statement = $this->database->prepare($query);
         $result = $statement->execute();

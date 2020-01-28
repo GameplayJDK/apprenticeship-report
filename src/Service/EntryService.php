@@ -34,6 +34,8 @@ use Psr\Log\LoggerInterface;
  */
 class EntryService
 {
+    use EntryAccumulatorTrait;
+
     /**
      * @var LoggerInterface
      */
@@ -136,7 +138,8 @@ class EntryService
         if (null !== $entry && $entry->getId() === $id) {
             $list = $this->entryRepository->getAllBetweenDatetimeFromAndDatetimeTo($entry->getDatetimeFrom(), $entry->getDatetimeTo());
 
-            $content = $this->importEntryContentFromList($list);
+            // Call function from trait.
+            $content = $this->accumulateEntryContent($list);
 
             $entry->setContent($content);
             $entry->setIssue(null);
@@ -187,22 +190,5 @@ class EntryService
         }
 
         return $entry;
-    }
-
-    /**
-     * @param array|Entry[] $list
-     * @return string
-     */
-    public function importEntryContentFromList(array $list)
-    {
-        $listContent = array_map(function (Entry $entry): string {
-            $date = $entry->getDatetimeFrom()
-                ->format('d-m-Y');
-            $content = $entry->getContent();
-
-            return "($date) $content";
-        }, $list);
-
-        return implode(PHP_EOL, $listContent);
     }
 }

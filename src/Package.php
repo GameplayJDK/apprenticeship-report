@@ -30,6 +30,8 @@ use App\Repository\EntryRepositoryInterface;
 use App\Service\EntryService;
 use App\Service\ImportService;
 use App\Service\PrintService;
+use App\Service\ProvisionService;
+use DateTime;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PDO;
@@ -91,6 +93,8 @@ class Package extends PackageAbstract
         $this->registerEntryService();
 
         $this->registerImportService();
+
+        $this->registerProvisionService();
 
         $this->registerPrintService();
 
@@ -305,6 +309,33 @@ class Package extends PackageAbstract
         });
     }
 
+    /**
+     * @throws PackageException
+     */
+    private function registerProvisionService()
+    {
+        $this->registerConfiguration(ProvisionService::class, [
+            'datetime_from' => new DateTime(),
+            'datetime_to' => new DateTime(),
+        ]);
+
+        /** @var array $configuration */
+        $configuration = $this->container[static::SERVICE_NAME_CONFIGURATION];
+
+        $this->registerService(ProvisionService::class, function (Container $container) use ($configuration): ProvisionService {
+            /** @var array $settings */
+            $settings = $configuration[ProvisionService::class];
+
+            /** @var LoggerInterface $logger */
+            $logger = $container[LoggerInterface::class];
+            /** @var EntryRepositoryInterface $entryRepository */
+            $entryRepository = $container[EntryRepositoryInterface::class];
+
+            return new ProvisionService($logger, $entryRepository, $settings['datetime_from'],
+                $settings['datetime_to']);
+        });
+    }
+
     private function registerController()
     {
         $this->registerService(IndexController::class, function (Container $container): IndexController {
@@ -312,8 +343,10 @@ class Package extends PackageAbstract
             $twig = $container[Twig::class];
             /** @var ImportService $importService */
             $importService = $container[ImportService::class];
+            /** @var ProvisionService $provisionService */
+            $provisionService = $container[ProvisionService::class];
 
-            return new IndexController($twig, $importService);
+            return new IndexController($twig, $importService, $provisionService);
         });
 
         IndexController::register($this->app);

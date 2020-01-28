@@ -20,12 +20,12 @@
 namespace App\Controller;
 
 use App\ControllerInterface;
+use App\Middleware\XhrMiddleware;
 use App\Service\ImportService;
+use App\Service\ProvisionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
-use Slim\Exception\HttpMethodNotAllowedException;
-use Slim\Exception\HttpNotFoundException;
 use Slim\Views\Twig;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -40,6 +40,7 @@ class IndexController implements ControllerInterface
 {
     const ROUTE_INDEX = 'index.index';
     const ROUTE_IMPORT = 'index.import';
+    const ROUTE_PROVISION = 'index.provision';
 
     /**
      * @param App $app
@@ -49,8 +50,15 @@ class IndexController implements ControllerInterface
         $app->get('/', IndexController::class . ':indexAction')
             ->setName(IndexController::ROUTE_INDEX);
 
+        $xhrMiddleware = new XhrMiddleware();
+
         $app->get('/import', IndexController::class . ':importAction')
-            ->setName(IndexController::ROUTE_IMPORT);
+            ->setName(IndexController::ROUTE_IMPORT)
+            ->addMiddleware($xhrMiddleware);
+
+        $app->get('/provision', IndexController::class . ':provisionAction')
+            ->setName(IndexController::ROUTE_PROVISION)
+            ->addMiddleware($xhrMiddleware);
     }
 
     /**
@@ -64,14 +72,21 @@ class IndexController implements ControllerInterface
     private $importService;
 
     /**
+     * @var ProvisionService
+     */
+    private $provisionService;
+
+    /**
      * IndexController constructor.
      * @param Twig $twig
      * @param ImportService $importService
+     * @param ProvisionService $provisionService
      */
-    public function __construct(Twig $twig, ImportService $importService)
+    public function __construct(Twig $twig, ImportService $importService, ProvisionService $provisionService)
     {
         $this->twig = $twig;
         $this->importService = $importService;
+        $this->provisionService = $provisionService;
     }
 
     /**
@@ -86,14 +101,21 @@ class IndexController implements ControllerInterface
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
+    public function indexAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         return $this->twig
             ->render($response, 'index/index.html.twig', [
                 'import' => [
                     'configuration' => [
+                        // TODO: Use a new function called getConfiguration() instead.
                         'time_limit' => $this->importService->getTimeLimit(),
                         'path' => $this->importService->getPath(),
+                    ],
+                ],
+                'provision' => [
+                    'configuration' => [
+                        // TODO: Use a new function called getConfiguration() instead.
+                        'datetime_from' => $this->provisionService->getDatetimeFrom(),
+                        'datetime_to' => $this->provisionService->getDatetimeTo(),
                     ],
                 ],
             ]);
@@ -106,15 +128,32 @@ class IndexController implements ControllerInterface
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
-     * @throws HttpMethodNotAllowedException
      */
-    public function importAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
-        if ($request->getHeaderLine('X-Requested-With') !== 'XMLHttpRequest') {
-            throw new HttpMethodNotAllowedException($request);
-        }
-
+    public function importAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $result = $this->importService->import();
+        $data = [
+            'result' => $result,
+        ];
+
+        $payload = json_encode($data) ?: null;
+
+        $response->getBody()
+            ->write($payload);
+
+        return $response
+            ->withHeader('Content-Type', 'application/json');
+    }
+
+    /**
+     * index.provision
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     */
+    public function provisionAction(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $result = $this->provisionService->provision();
         $data = [
             'result' => $result,
         ];

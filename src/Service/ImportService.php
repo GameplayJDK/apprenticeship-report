@@ -82,8 +82,6 @@ class ImportService
     }
 
     /**
-     * TODO: Make this less ugly.
-     *
      * @return bool
      */
     public function import(): bool
@@ -117,36 +115,7 @@ class ImportService
                 continue;
             }
 
-            // This is for better readability.
-            $data = $row;
-
-            try {
-                $entry = $this->entryMapper->fromData($data);
-
-                if ($this->entryRepository->insertOne($entry) > -1) {
-                    $this->logger->info('Could insert entry.', [
-                        'index' => $index,
-                        'row' => $row,
-                        'data' => $data,
-                        'entry' => $entry,
-                    ]);
-                } else {
-                    $this->logger->error('Could not insert entry.', [
-                        'index' => $index,
-                        'row' => $row,
-                        'data' => $data,
-                        'entry' => $entry,
-                    ]);
-                }
-            } catch (Exception $exception) {
-                $this->logger->error('Could not insert entry.', [
-                    'exception' => $exception,
-                    'index' => $index,
-                    'row' => $row,
-                    'data' => $data ?? null,
-                    'entry' => $entry ?? null,
-                ]);
-            }
+            $this->createEntry($index, $row);
         }
 
         return true;
@@ -194,9 +163,55 @@ class ImportService
 
             return $worksheet->toArray(null, false, true, true);
         } catch (SpreadsheetException $exception) {
+            $this->logger->error('Could not get active sheet.', [
+                'exception' => $exception,
+            ]);
         }
 
         return [];
+    }
+
+    /**
+     * @param int $index
+     * @param array $row
+     * @return bool
+     */
+    private function createEntry(int $index, array $row): bool
+    {
+        // This is for better readability.
+        $data = $row;
+
+        try {
+            $entry = $this->entryMapper->fromData($data);
+
+            if ($this->entryRepository->insertOne($entry) > -1) {
+                $this->logger->info('Could insert entry.', [
+                    'index' => $index,
+                    'row' => $row,
+                    'data' => $data,
+                    'entry' => $entry,
+                ]);
+
+                return true;
+            } else {
+                $this->logger->error('Could not insert entry.', [
+                    'index' => $index,
+                    'row' => $row,
+                    'data' => $data,
+                    'entry' => $entry,
+                ]);
+            }
+        } catch (Exception $exception) {
+            $this->logger->error('Could not insert entry.', [
+                'exception' => $exception,
+                'index' => $index,
+                'row' => $row,
+                'data' => $data ?? null,
+                'entry' => $entry ?? null,
+            ]);
+        }
+
+        return false;
     }
 
     /**

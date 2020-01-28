@@ -20,6 +20,7 @@
 use App\Mapper\Import\EntryMapper as ImportEntryMapper;
 use App\Service\ImportService;
 use App\Service\PrintService;
+use App\Service\ProvisionService;
 use Monolog\Logger;
 use Slim\Views\Twig;
 
@@ -51,11 +52,6 @@ return [
         ],
     ],
 
-    ImportService::class => [
-        'time_limit' => 0,
-        'path' => dirname(__DIR__) . '/import.xlsx',
-    ],
-
     ImportEntryMapper::class => [
         'map' => [
             ImportEntryMapper::KEY_ID => -1,
@@ -65,6 +61,16 @@ return [
             ImportEntryMapper::KEY_CONTENT_HINT => 'T',
             ImportEntryMapper::KEY_ISSUE => 'A',
         ],
+    ],
+
+    ImportService::class => [
+        'time_limit' => 0,
+        'path' => dirname(__DIR__) . '/import.xlsx',
+    ],
+
+    ProvisionService::class => [
+        'datetime_from' => DateTime::createFromFormat('Y-m-d H:i', '2017-09-01 08:00') ?: new DateTime(),
+        'datetime_to' => DateTime::createFromFormat('Y-m-d H:i', '2020-03-01 08:00') ?: new DateTime(),
     ],
 
     PrintService::class => [
