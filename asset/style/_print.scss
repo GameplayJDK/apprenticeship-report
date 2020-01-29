@@ -27,6 +27,9 @@
 .container-print {
   @extend .container;
 
+  // Not needed in this context, use ".print-background" class instead.
+  //-webkit-print-color-adjust: exact;
+
   // Reset the container properties when printing, so only the table decides over the layout.
   @media print {
     max-width: unset;
@@ -64,4 +67,12 @@
     .entry-text {
     }
   }
+}
+
+.print-color-exact {
+  -webkit-print-color-adjust: exact;
+}
+
+.print-color-economy {
+  -webkit-print-color-adjust: economy;
 }

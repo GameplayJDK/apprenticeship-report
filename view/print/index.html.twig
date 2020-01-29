@@ -10,16 +10,18 @@
             <thead>
             <tr class="bg-white p-2">
                 <th>
-                    <header class="d-flex justify-content-between">
-                        <div class="p-2">
-                            <img src="/asset/image/company.png" width="auto" height="30px"
-                                 class="d-inline-block align-top" alt="">
-                        </div>
+                    {% block header %}
+                        <header class="d-flex justify-content-between">
+                            <div class="p-2">
+                                <img src="/asset/image/company.png" width="auto" height="30px"
+                                     class="d-inline-block align-top" alt="">
+                            </div>
 
-                        <div class="p-2 text-right">
-                            {{ extra_data.author }}
-                        </div>
-                    </header>
+                            <div class="p-2 text-right">
+                                {{ extra_data.author }}
+                            </div>
+                        </header>
+                    {% endblock %}
                 </th>
             </tr>
             </thead>
@@ -31,7 +33,7 @@
                         <div class="entry container border-bottom border-dark">
                             <div class="entry-headline mt-3">
                                 <h3>
-                                    Woche {{ '%03d'|format(loop.index) }}
+                                    {{ extra_data.week }} {{ '%03d'|format(loop.index) }}
                                 </h3>
 
                                 <small>{{ entry.datetimeFrom|date('d.m.Y') }}
@@ -49,22 +51,29 @@
             <tr class="bg-white p-2">
                 <td>
                     <div class="invisible-print">
-                        <footer class="d-flex justify-content-between">
-                            {% block footer %}
+                        {% block footer %}
+                            <footer class="d-flex justify-content-between">
                                 <div class="p-2">
                                     {{ extra_data.information }}
                                 </div>
 
+                                {% for label in extra_data.signature %}
+                                    <div class="p-2 w-25">
+                                        <div class="bg-light border-bottom border-dark print-color-exact" style="height: 35px;">
+                                        </div>
+                                        <small class="signature-label form-text text-muted">{{ label }}</small>
+                                    </div>
+                                {% endfor %}
+
                                 <div class="p-2">
+                                    &nbsp;
                                 </div>
-                            {% endblock %}
-                        </footer>
+                            </footer>
+                        {% endblock %}
                     </div>
 
-                    <div class="d-none d-print-block fixed-bottom bg-white">
-                        <footer class="d-flex justify-content-between p-2">
-                            {{ block('footer') }}
-                        </footer>
+                    <div class="d-none d-print-block fixed-bottom bg-white p-2">
+                        {{ block('footer') }}
                     </div>
                 </td>
             </tr>

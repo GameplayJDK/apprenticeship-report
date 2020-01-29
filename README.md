@@ -40,6 +40,13 @@ Also create the file `./app/print_service_extra_data.php` with the following con
 
 return [
     // key => value
+    'author' => 'John Doe',
+    'week' => 'Week:',
+    'information' => 'This apprenticeship report was generated digitally.',
+    'signature' => [
+        'trainee' => 'Signature trainee',
+        'trainer' => 'Signature trainer',
+    ],
 ];
 
 ```
