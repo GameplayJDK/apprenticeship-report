@@ -16,14 +16,16 @@
                                 filter
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item{% if 'manual' is not same as(filter) %} active{% endif %}" href="{{ url_for('entry.index', {}, {
-                                    'filter': 'none',
-                                }) }}">
+                                <a class="dropdown-item{% if 'manual' is not same as(filter) %} active{% endif %}"
+                                   href="{{ url_for('entry.index', {}, {
+                                       'filter': 'none',
+                                   }) }}">
                                     none
                                 </a>
-                                <a class="dropdown-item{% if 'manual' is same as(filter) %} active{% endif %}" href="{{ url_for('entry.index', {}, {
-                                    'filter': 'manual',
-                                }) }}">
+                                <a class="dropdown-item{% if 'manual' is same as(filter) %} active{% endif %}"
+                                   href="{{ url_for('entry.index', {}, {
+                                       'filter': 'manual',
+                                   }) }}">
                                     manual
                                 </a>
                             </div>
@@ -36,39 +38,41 @@
                 </div>
             </div>
 
-            {% if 'manual' is same as(filter) %}
-                <div class="alert alert-info" role="alert">
-                    the filter is set to <code>manual</code> by default
-                </div>
-            {% endif %}
+            <div class="mb-3">
+                {% if 'manual' is same as(filter) %}
+                    <div class="alert alert-info" role="alert">
+                        the filter is set to <code>manual</code> by default
+                    </div>
+                {% endif %}
 
-            <div class="list-group">
-                {% for entry in data.list %}
-                    <div class="list-group-item list-group-item-action d-flex flex-row justify-content-between align-items-center">
-                        <a class="flex-fill text-decoration-none min-width-0" href="{{ url_for('entry.view', {
-                            'id': entry.id,
-                        }) }}">
-                            <h5 class="mb-0 d-block text-truncate">{{ entry.content }}</h5>
-                        </a>
-
-                        <div class="flex-shrink-0 ml-3">
-                            <a class="btn btn-sm btn-primary" href="{{ url_for('entry.edit', {
+                <div class="list-group">
+                    {% for entry in data.list %}
+                        <div class="list-group-item list-group-item-action d-flex flex-row justify-content-between align-items-center">
+                            <a class="flex-fill text-decoration-none min-width-0" href="{{ url_for('entry.view', {
                                 'id': entry.id,
                             }) }}">
-                                edit
+                                <h5 class="mb-0 d-block text-truncate">{{ entry.content }}</h5>
                             </a>
-                            <a class="btn btn-sm btn-danger" href="{{ url_for('entry.delete', {
-                                'id': entry.id,
-                            }) }}">
-                                delete
-                            </a>
+
+                            <div class="flex-shrink-0 ml-3">
+                                <a class="btn btn-sm btn-primary" href="{{ url_for('entry.edit', {
+                                    'id': entry.id,
+                                }) }}">
+                                    edit
+                                </a>
+                                <a class="btn btn-sm btn-danger" href="{{ url_for('entry.delete', {
+                                    'id': entry.id,
+                                }) }}">
+                                    delete
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                {% else %}
-                    <div class="list-group-item text-center text-secondary p-5">
-                        no entry found
-                    </div>
-                {% endfor %}
+                    {% else %}
+                        <div class="list-group-item text-center text-secondary p-5">
+                            no entry found
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

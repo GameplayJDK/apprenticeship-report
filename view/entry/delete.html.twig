@@ -29,63 +29,65 @@
                 </div>
             </div>
 
-            {% if error %}
-                <div class="mb-3">
+            <div class="mb-3">
+                {% if error %}
                     <div class="alert alert-danger" role="alert">
                         an error has occurred
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
 
-            <form method="post" action="">
-                <input type="hidden" name="entry[id]" value="{{ data.entry.id }}">
-                <input type="hidden" name="entry[datetime_from]" value="{{ data.entry.datetimeFrom|date('Y-m-d') }}">
-                <input type="hidden" name="entry[datetime_to]" value="{{ data.entry.datetimeFrom|date('Y-m-d') }}">
-                <input type="hidden" name="entry[content]" value="{{ data.entry.content }}">
-                <input type="hidden" name="entry[issue]" value="{{ data.entry.issue }}">
+                <form method="post" action="">
+                    <input type="hidden" name="entry[id]" value="{{ data.entry.id }}">
+                    <input type="hidden" name="entry[datetime_from]"
+                           value="{{ data.entry.datetimeFrom|date('Y-m-d') }}">
+                    <input type="hidden" name="entry[datetime_to]" value="{{ data.entry.datetimeFrom|date('Y-m-d') }}">
+                    <input type="hidden" name="entry[content]" value="{{ data.entry.content }}">
+                    <input type="hidden" name="entry[issue]" value="{{ data.entry.issue }}">
 
-                <fieldset disabled>
-                    <div class="form-row">
-                        <div class="col form-group">
-                            <label for="formControlFromDateTime">from datetime</label>
-                            <input id="formControlFromDateTime" class="form-control" type="date"
-                                   name="entry[datetime_from]" value="{{ data.entry.datetimeFrom|date('Y-m-d') }}">
+                    <fieldset disabled>
+                        <div class="form-row">
+                            <div class="col form-group">
+                                <label for="formControlFromDateTime">from datetime</label>
+                                <input id="formControlFromDateTime" class="form-control" type="date"
+                                       name="entry[datetime_from]" value="{{ data.entry.datetimeFrom|date('Y-m-d') }}">
+                            </div>
+                            <div class="col form-group">
+                                <label for="formControlToDateTime">to datetime</label>
+                                <input id="formControlToDateTime" class="form-control" type="date"
+                                       name="entry[datetime_to]"
+                                       value="{{ data.entry.datetimeTo|date('Y-m-d') }}">
+                            </div>
                         </div>
-                        <div class="col form-group">
-                            <label for="formControlToDateTime">to datetime</label>
-                            <input id="formControlToDateTime" class="form-control" type="date" name="entry[datetime_to]"
-                                   value="{{ data.entry.datetimeTo|date('Y-m-d') }}">
+
+                        <div class="form-group">
+                            <label for="formInputContent">content</label>
+                            <textarea id="formInputContent" class="form-control" name="entry[content]"
+                                      placeholder="content">{{ data.entry.content }}</textarea>
                         </div>
-                    </div>
+
+                        <div class="form-group">
+                            <label for="formControlIssue">issue</label>
+                            <input id="formControlIssue" class="form-control" type="text" name="entry[issue]"
+                                   value="{{ data.entry.issue }}" placeholder="issue">
+                        </div>
+                    </fieldset>
 
                     <div class="form-group">
-                        <label for="formInputContent">content</label>
-                        <textarea id="formInputContent" class="form-control" name="entry[content]"
-                                  placeholder="content">{{ data.entry.content }}</textarea>
+                        <div class="form-check">
+                            <input id="formControlConfirm" class="form-check-input" type="checkbox" name="confirm"
+                                   value="1" aria-describedby="formControlConfirmHelp">
+                            <label for="formControlConfirm" class="form-check-label">
+                                confirm
+                            </label>
+                            <small id="formControlConfirmHelp" class="form-text text-muted">(data will be lost)</small>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="formControlIssue">issue</label>
-                        <input id="formControlIssue" class="form-control" type="text" name="entry[issue]"
-                               value="{{ data.entry.issue }}" placeholder="issue">
-                    </div>
-                </fieldset>
-
-                <div class="form-group">
-                    <div class="form-check">
-                        <input id="formControlConfirm" class="form-check-input" type="checkbox" name="confirm"
-                               value="1" aria-describedby="formControlConfirmHelp">
-                        <label for="formControlConfirm" class="form-check-label">
-                            confirm
-                        </label>
-                        <small id="formControlConfirmHelp" class="form-text text-muted">(the data will be lost)</small>
-                    </div>
-                </div>
-
-                <button class="btn btn-danger" type="submit" name="submit">
-                    delete
-                </button>
-            </form>
+                    <button class="btn btn-danger" type="submit" name="submit">
+                        delete
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}

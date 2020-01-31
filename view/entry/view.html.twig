@@ -29,46 +29,46 @@
                 </div>
             </div>
 
-            {% if error %}
-                <div class="mb-3">
+            <div class="mb-3">
+                {% if error %}
                     <div class="alert alert-danger" role="alert">
                         an error has occurred
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
 
-            <table class="table">
-                <thead class="thead-light">
-                <tr>
-                    <th scope="col" class="w-25">field</th>
-                    <th scope="col">value</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">id</th>
-                    <td>{{ data.entry.id }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">from datetime</th>
-                    <td>{{ data.entry.datetimeFrom|date('Y-m-d') }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">to datetime</th>
-                    <td>{{ data.entry.datetimeTo|date('Y-m-d') }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">content</th>
-                    <td>
-                        <div class="pre-scrollable preserve-line-break">{{ data.entry.content }}</div>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">issue</th>
-                    <td>{{ data.entry.issue }}</td>
-                </tr>
-                </tbody>
-            </table>
+                <table class="table">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col" class="w-25">field</th>
+                        <th scope="col">value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">id</th>
+                        <td>{{ data.entry.id }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">from datetime</th>
+                        <td>{{ data.entry.datetimeFrom|date('Y-m-d') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">to datetime</th>
+                        <td>{{ data.entry.datetimeTo|date('Y-m-d') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">content</th>
+                        <td>
+                            <div class="pre-scrollable preserve-line-break">{{ data.entry.content }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">issue</th>
+                        <td>{{ data.entry.issue }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 {% endblock %}

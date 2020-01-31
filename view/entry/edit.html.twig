@@ -29,58 +29,58 @@
                 </div>
             </div>
 
-            {% if error %}
-                <div class="mb-3">
+            <div class="mb-3">
+                {% if error %}
                     <div class="alert alert-danger" role="alert">
                         an error has occurred
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
 
-            <form method="post" action="">
-                <input type="hidden" name="entry[id]" value="{{ data.entry.id }}">
+                <form method="post" action="">
+                    <input type="hidden" name="entry[id]" value="{{ data.entry.id }}">
 
-                <div class="form-row">
-                    <div class="col form-group">
-                        <label for="formControlFromDateTime">from datetime</label>
-                        <input id="formControlFromDateTime" class="form-control" type="date"
-                               name="entry[datetime_from]" value="{{ data.entry.datetimeFrom|date('Y-m-d') }}">
+                    <div class="form-row">
+                        <div class="col form-group">
+                            <label for="formControlFromDateTime">from datetime</label>
+                            <input id="formControlFromDateTime" class="form-control" type="date"
+                                   name="entry[datetime_from]" value="{{ data.entry.datetimeFrom|date('Y-m-d') }}">
+                        </div>
+                        <div class="col form-group">
+                            <label for="formControlToDateTime">to datetime</label>
+                            <input id="formControlToDateTime" class="form-control" type="date" name="entry[datetime_to]"
+                                   value="{{ data.entry.datetimeTo|date('Y-m-d') }}">
+                        </div>
                     </div>
-                    <div class="col form-group">
-                        <label for="formControlToDateTime">to datetime</label>
-                        <input id="formControlToDateTime" class="form-control" type="date" name="entry[datetime_to]"
-                               value="{{ data.entry.datetimeTo|date('Y-m-d') }}">
+
+                    <div class="form-group">
+                        <label for="formInputContent">content</label>
+                        <textarea id="formInputContent" class="form-control" name="entry[content]"
+                                  placeholder="content">{{ data.entry.content }}</textarea>
+                        <small class="form-text text-muted">length of 4096 chars</small>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="formInputContent">content</label>
-                    <textarea id="formInputContent" class="form-control" name="entry[content]"
-                              placeholder="content">{{ data.entry.content }}</textarea>
-                    <small class="form-text text-muted">length of 4096 chars</small>
-                </div>
+                    <div class="form-group">
+                        <label for="formControlIssue">issue</label>
+                        <input id="formControlIssue" class="form-control" type="text" name="entry[issue]"
+                               value="{{ data.entry.issue }}" placeholder="issue">
+                        <small class="form-text text-muted">length of 256 chars</small>
+                    </div>
 
-                <div class="form-group">
-                    <label for="formControlIssue">issue</label>
-                    <input id="formControlIssue" class="form-control" type="text" name="entry[issue]"
-                           value="{{ data.entry.issue }}" placeholder="issue">
-                    <small class="form-text text-muted">length of 256 chars</small>
-                </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit" name="submit" value="save">
+                            save
+                        </button>
 
-                <div class="form-group">
-                    <button class="btn btn-primary" type="submit" name="submit" value="save">
-                        save
-                    </button>
+                        or
 
-                    or
+                        <button class="btn btn-outline-primary" type="submit" name="submit" value="import">
+                            import
+                        </button>
 
-                    <button class="btn btn-outline-primary" type="submit" name="submit" value="import">
-                        import
-                    </button>
-
-                    (will override the current content)
-                </div>
-            </form>
+                        (will override the current content)
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}

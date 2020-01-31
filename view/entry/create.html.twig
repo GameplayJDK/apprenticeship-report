@@ -17,47 +17,48 @@
                 </div>
             </div>
 
-            {% if error %}
-                <div class="mb-3">
+            <div class="mb-3">
+                {% if error %}
                     <div class="alert alert-danger" role="alert">
                         an error has occurred
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
 
-            <form method="post" action="">
-                <input type="hidden" name="entry[id]" value="-1">
+                <form method="post" action="">
+                    <input type="hidden" name="entry[id]" value="-1">
 
-                <div class="form-row">
-                    <div class="col form-group">
-                        <label for="formControlFromDateTime">from datetime</label>
-                        <input id="formControlFromDateTime" class="form-control" type="date"
-                               name="entry[datetime_from]">
+                    <div class="form-row">
+                        <div class="col form-group">
+                            <label for="formControlFromDateTime">from datetime</label>
+                            <input id="formControlFromDateTime" class="form-control" type="date"
+                                   name="entry[datetime_from]">
+                        </div>
+                        <div class="col form-group">
+                            <label for="formControlToDateTime">to datetime</label>
+                            <input id="formControlToDateTime" class="form-control" type="date"
+                                   name="entry[datetime_to]">
+                        </div>
                     </div>
-                    <div class="col form-group">
-                        <label for="formControlToDateTime">to datetime</label>
-                        <input id="formControlToDateTime" class="form-control" type="date" name="entry[datetime_to]">
+
+                    <div class="form-group">
+                        <label for="formInputContent">content</label>
+                        <textarea id="formInputContent" class="form-control" name="entry[content]"
+                                  placeholder="content"></textarea>
+                        <small class="form-text text-muted">length of 4096 chars</small>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="formInputContent">content</label>
-                    <textarea id="formInputContent" class="form-control" name="entry[content]"
-                              placeholder="content"></textarea>
-                    <small class="form-text text-muted">length of 4096 chars</small>
-                </div>
+                    <div class="form-group">
+                        <label for="formControlIssue">issue</label>
+                        <input id="formControlIssue" class="form-control" type="text" name="entry[issue]"
+                               placeholder="issue">
+                        <small class="form-text text-muted">length of 256 chars</small>
+                    </div>
 
-                <div class="form-group">
-                    <label for="formControlIssue">issue</label>
-                    <input id="formControlIssue" class="form-control" type="text" name="entry[issue]"
-                           placeholder="issue">
-                    <small class="form-text text-muted">length of 256 chars</small>
-                </div>
-
-                <button class="btn btn-primary" type="submit" name="submit">
-                    create
-                </button>
-            </form>
+                    <button class="btn btn-primary" type="submit" name="submit">
+                        create
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}
