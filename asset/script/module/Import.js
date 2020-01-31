@@ -33,18 +33,26 @@ Module('App.Import', (function () {
         modal.modal('show');
     }
 
+    function notifyResult(result) {
+        setButtonState(true);
+        showModal(result.toString());
+    }
+
     function handleClick(event) {
         setButtonState(false);
 
         var url = button.data('url');
 
         if (!!url) {
-            $.getJSON(url, function (data) {
-                var result = !!data.result;
+            $.getJSON(url)
+                .done(function (data, textStatus, jqXHR) {
+                    var result = !!data.result;
 
-                setButtonState(true);
-                showModal(result.toString());
-            });
+                    notifyResult(result);
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    notifyResult(false);
+                });
         } else {
             setButtonState(true);
         }

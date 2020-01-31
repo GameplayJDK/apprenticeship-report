@@ -32,7 +32,7 @@ trait EntryAccumulatorTrait
      * @param array|Entry[] $list
      * @return string
      */
-    public function accumulateEntryContent(array $list)
+    protected function accumulateEntryContent(array $list)
     {
         $listContent = array_map(function (Entry $entry): string {
             $date = $entry->getDatetimeFrom()

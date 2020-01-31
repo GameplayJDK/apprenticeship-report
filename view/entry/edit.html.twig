@@ -57,12 +57,14 @@
                     <label for="formInputContent">content</label>
                     <textarea id="formInputContent" class="form-control" name="entry[content]"
                               placeholder="content">{{ data.entry.content }}</textarea>
+                    <small class="form-text text-muted">length of 4096 chars</small>
                 </div>
 
                 <div class="form-group">
                     <label for="formControlIssue">issue</label>
                     <input id="formControlIssue" class="form-control" type="text" name="entry[issue]"
                            value="{{ data.entry.issue }}" placeholder="issue">
+                    <small class="form-text text-muted">length of 256 chars</small>
                 </div>
 
                 <div class="form-group">

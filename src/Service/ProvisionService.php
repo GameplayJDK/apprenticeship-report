@@ -32,6 +32,7 @@ use Psr\Log\LoggerInterface;
  */
 class ProvisionService
 {
+    use DatetimeDayOfWeekTrait;
     use EntryAccumulatorTrait;
 
     /**
@@ -95,7 +96,9 @@ class ProvisionService
     {
         $list = [];
 
-        $datetimeCurrent = clone $this->datetimeFrom;
+        $datetimeCurrent = $this->getDatetimeCurrent();
+
+        echo('<pre>');print_r($datetimeCurrent);echo('</pre>');exit();
 
         while ($datetimeCurrent <= $this->datetimeTo) {
             $entry = new Entry();
@@ -134,6 +137,44 @@ class ProvisionService
         }
 
         return $list;
+    }
+
+    /**
+     * @return DateTime
+     */
+    private function getDatetimeCurrent(): DateTime
+    {
+        $datetimeCurrent = clone $this->datetimeFrom;
+
+        if (!$this->isDatetimeValid($datetimeCurrent)) {
+            $this->logger->info('Invalid current datetime detected (no weekend).');
+
+            // Reset to 'last Sunday', so the 'next Monday' modification works correctly.
+            if (false === $datetimeCurrent->modify('last Saturday')) {
+                $this->logger->error('Could not modify current datetime with "next Monday".', [
+                    'datetimeFrom' => $this->datetimeFrom,
+                    'datetimeTo' => $this->datetimeTo,
+                    'datetimeCurrent' => $datetimeCurrent,
+                ]);
+            } else {
+                $this->logger->info('Could modify current datetime with "last Saturday"');
+            }
+        }
+
+        return $datetimeCurrent;
+    }
+
+    /**
+     * A datetime is seen as invalid, when it is a weekday. Monday through Friday is the timespan of an entry, so the
+     * provisioning should start at a monday, which would skip a whole week due to the first `modify()` call inside the
+     * while loop.
+     *
+     * @param DateTime $dateTime
+     * @return bool
+     */
+    private function isDatetimeValid(DateTime $dateTime): bool
+    {
+        return $this->isWeekend($dateTime);
     }
 
     /**
