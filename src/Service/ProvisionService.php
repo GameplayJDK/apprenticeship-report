@@ -98,8 +98,6 @@ class ProvisionService
 
         $datetimeCurrent = $this->getDatetimeCurrent();
 
-        echo('<pre>');print_r($datetimeCurrent);echo('</pre>');exit();
-
         while ($datetimeCurrent <= $this->datetimeTo) {
             $entry = new Entry();
             $entry->setId(-1);
