@@ -97,8 +97,9 @@ class ProvisionService
         $list = [];
 
         $datetimeCurrent = $this->getDatetimeCurrent();
+        $datetimeNext = $this->getDatetimeNext();
 
-        while ($datetimeCurrent <= $this->datetimeTo) {
+        while ($datetimeCurrent <= $datetimeNext) {
             $entry = new Entry();
             $entry->setId(-1);
 
@@ -107,6 +108,7 @@ class ProvisionService
                     'datetimeFrom' => $this->datetimeFrom,
                     'datetimeTo' => $this->datetimeTo,
                     'datetimeCurrent' => $datetimeCurrent,
+                    'datetimeNext' => $datetimeNext,
                     'entry' => $entry,
                 ]);
 
@@ -120,6 +122,7 @@ class ProvisionService
                     'datetimeFrom' => $this->datetimeFrom,
                     'datetimeTo' => $this->datetimeTo,
                     'datetimeCurrent' => $datetimeCurrent,
+                    'datetimeNext' => $datetimeNext,
                     'entry' => $entry,
                 ]);
 
@@ -149,17 +152,42 @@ class ProvisionService
 
             // Reset to 'last Sunday', so the 'next Monday' modification works correctly.
             if (false === $datetimeCurrent->modify('last Saturday')) {
-                $this->logger->error('Could not modify current datetime with "next Monday".', [
+                $this->logger->error('Could not modify current datetime with "last Saturday".', [
                     'datetimeFrom' => $this->datetimeFrom,
                     'datetimeTo' => $this->datetimeTo,
                     'datetimeCurrent' => $datetimeCurrent,
                 ]);
             } else {
-                $this->logger->info('Could modify current datetime with "last Saturday"');
+                $this->logger->info('Could modify current datetime with "last Saturday".');
             }
         }
 
         return $datetimeCurrent;
+    }
+
+    /**
+     * @return DateTime
+     */
+    private function getDatetimeNext(): DateTime
+    {
+        $datetimeNext = clone $this->datetimeTo;
+
+        if (!$this->isDatetimeValid($datetimeNext)) {
+            $this->logger->info('Invalid current datetime detected (no weekend).');
+
+            // Set to 'next Sunday', so the 'next Friday' modification works correctly.
+            if (false === $datetimeNext->modify('next Saturday')) {
+                $this->logger->error('Could not modify current datetime with "next Saturday".', [
+                    'datetimeFrom' => $this->datetimeFrom,
+                    'datetimeTo' => $this->datetimeTo,
+                    'datetimeNext' => $datetimeNext,
+                ]);
+            } else {
+                $this->logger->info('Could modify current datetime with "next Saturday".');
+            }
+        }
+
+        return $datetimeNext;
     }
 
     /**
