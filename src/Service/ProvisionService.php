@@ -212,9 +212,13 @@ class ProvisionService
         try {
             $list = $this->entryRepository->getAllBetweenDatetimeFromAndDatetimeTo($entry->getDatetimeFrom(), $entry->getDatetimeTo());
 
-            // Call function from trait.
-            $content = $this->accumulateEntryContent($list);
+            $content = '';
+            if (!empty($list)) {
+                // Call function from trait.
+                $content = $this->accumulateEntryContent($list);
+            }
 
+            $entry->setId(-1);
             $entry->setContent($content);
             $entry->setIssue(null);
 
