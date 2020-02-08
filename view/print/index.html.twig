@@ -27,7 +27,7 @@
             </thead>
 
             <tbody>
-            {% for entry in data.list %}
+            {% for entry in data.list|filter(entry => entry.content is not empty) %}
                 <tr>
                     <td>
                         <div class="entry container border-bottom border-dark">

@@ -24,3 +24,5 @@ var/log
 *.pdf
 
 app/print_service_extra_data.php
+
+asset/data/entry.sql
