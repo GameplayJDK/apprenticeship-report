@@ -99,7 +99,13 @@ class ProvisionService
         $datetimeCurrent = $this->getDatetimeCurrent();
         $datetimeNext = $this->getDatetimeNext();
 
-        while ($datetimeCurrent <= $datetimeNext) {
+        // Currently this will provision one entry to much at the end of the time period. This behaviour is caused by
+        // the next datetime always being a saturday which will cause the while clause to end up with a positive result.
+        // It could be countered by just using the original value for the next datetime value or by using 'next Friday'
+        // modification on an invalid datetime instead of 'next Saturday' (which by the way causes two entries to be
+        // provisioned ahead of the planned time period).
+        // TODO: Fix next datetime value.
+        while ($datetimeCurrent < $datetimeNext) {
             $entry = new Entry();
             $entry->setId(-1);
 
@@ -173,17 +179,17 @@ class ProvisionService
         $datetimeNext = clone $this->datetimeTo;
 
         if (!$this->isDatetimeValid($datetimeNext)) {
-            $this->logger->info('Invalid current datetime detected (no weekend).');
+            $this->logger->info('Invalid next datetime detected (no weekend).');
 
             // Set to 'next Sunday', so the 'next Friday' modification works correctly.
             if (false === $datetimeNext->modify('next Saturday')) {
-                $this->logger->error('Could not modify current datetime with "next Saturday".', [
+                $this->logger->error('Could not modify next datetime with "next Saturday".', [
                     'datetimeFrom' => $this->datetimeFrom,
                     'datetimeTo' => $this->datetimeTo,
                     'datetimeNext' => $datetimeNext,
                 ]);
             } else {
-                $this->logger->info('Could modify current datetime with "next Saturday".');
+                $this->logger->info('Could modify next datetime with "next Saturday".');
             }
         }
 
@@ -200,6 +206,7 @@ class ProvisionService
      */
     private function isDatetimeValid(DateTime $dateTime): bool
     {
+        // Call function from trait.
         return $this->isWeekend($dateTime);
     }
 
